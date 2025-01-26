@@ -320,6 +320,7 @@ const config: Config = {
       keyframes: {
         linspin: {
           "100%": { transform: "rotate(360deg)" },
+          
         },
         easespin: {
           "12.5%": { transform: "rotate(135deg)" },
@@ -361,6 +362,15 @@ const config: Config = {
           "0%, 100%": { transform: "translateY(100%)" },
           "50%": { transform: "translateY(0)" },
         },
+
+        fadeInDown: {
+          '0%': { opacity: '0', transform: 'translateY(-10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        fadeOutUp: {
+          '0%': { opacity: '1', transform: 'translateY(0)' },
+          '100%': { opacity: '0', transform: 'translateY(-10px)' },
+        },
       },
       animation: {
         linspin: "linspin 1568.2353ms linear infinite",
@@ -379,6 +389,8 @@ const config: Config = {
         line1: "line 10s infinite linear",
         line2: "line-revert 8s infinite linear",
         line3: "line 7s infinite linear",
+        'fade-in-down': 'fadeInDown 0.5s ease-out',
+        'fade-out-up': 'fadeOutUp 0.5s ease-in',
       },
     },
   },

@@ -1,224 +1,229 @@
-"use client";
+"use client"
 
-import React, { useState, useEffect } from "react";
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import SelectCategories from "@/components/FormElements/SelectGroup/SelectCategorie";
-import DeletCategorie from "@/components/Popups/DeletCategorie";
-import ModifyCategorie from "@/components/Popups/ModifyCategorie";
+import type React from "react"
+import { useState, useEffect } from "react"
+import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb"
+import SelectCategories from "@/components/FormElements/SelectGroup/SelectCategorie"
+import DeletCategorie from "@/components/Popups/DeletCategorie"
+import ModifyCategorie from "@/components/Popups/ModifyCategorie"
 
 // Define TypeScript interfaces for our data structures and components
 interface Category {
-  id: number;
-  nom: string;
-  logo?: string;
+  id: number
+  nom: string
+  logo?: string
 }
 
 // Interface for SelectCategories component props
 interface SelectCategoriesProps {
-  selectedCategory?: Category | null;
-  onCategoryChange: (category: Category) => void;
+  selectedCategory?: Category | null
+  onCategoryChange: (category: Category) => void
 }
 
 // Interface for ModifyCategorie component props
 interface ModifyCategorieProps {
-  onClose: () => void;
-  onConfirm: () => void;
-  isLoading?: boolean;
+  onClose: () => void
+  onConfirm: () => Promise<void>
+  isLoading: boolean
 }
 
 // Interface for DeletCategorie component props
 interface DeleteCategorieProps {
-  onClose: () => void;
-  onConfirm: () => void;
-  isLoading?: boolean;
+  onClose: () => void
+  onConfirm: () => Promise<void>
+  isLoading: boolean
 }
 
 const FormElements = () => {
   // State for managing categories and form data
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [categories, setCategories] = useState<Category[]>([])
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [statusMessage, setStatusMessage] = useState<{ type: "error" | "success"; message: string } | null>(null)
 
   // State for managing popups
-  const [isModifyPopupOpen, setModifyPopupOpen] = useState(false);
-  const [isDeletePopupOpen, setDeletePopupOpen] = useState(false);
+  const [isModifyPopupOpen, setModifyPopupOpen] = useState(false)
+  const [isDeletePopupOpen, setDeletePopupOpen] = useState(false)
 
   // State for form inputs
-  const [newCategoryName, setNewCategoryName] = useState("");
-  const [newCategoryLogo, setNewCategoryLogo] = useState<File | null>(null);
-  const [modifiedCategoryName, setModifiedCategoryName] = useState("");
-  const [modifiedCategoryLogo, setModifiedCategoryLogo] = useState<File | null>(null);
+  const [newCategoryName, setNewCategoryName] = useState("")
+  const [newCategoryLogo, setNewCategoryLogo] = useState<File | null>(null)
+  const [modifiedCategoryName, setModifiedCategoryName] = useState("")
+  const [modifiedCategoryLogo, setModifiedCategoryLogo] = useState<File | null>(null)
 
   // Fetch categories on component mount
   useEffect(() => {
-    fetchCategories();
-  }, []);
+    fetchCategories()
+  }, [])
 
   // Function to fetch all categories
   const fetchCategories = async () => {
     try {
-      const response = await fetch("/api/categoriesAdmin");
-      if (!response.ok) throw new Error("Erreur lors de la récupération des catégories");
-      const data = await response.json();
-      setCategories(data);
+      const response = await fetch("/api/categoriesAdmin")
+      if (!response.ok) throw new Error("Erreur lors de la récupération des catégories")
+      const data = await response.json()
+      setCategories(data)
     } catch (err) {
-      setError("Impossible de charger les catégories");
-      console.error("Error fetching categories:", err);
+      setErrorMessage("Impossible de charger les catégories")
+      console.error("Error fetching categories:", err)
     }
-  };
+  }
 
   // Function to handle category selection
   const handleCategoryChange = (category: Category) => {
-    setSelectedCategory(category);
-    setModifiedCategoryName(category.nom);
-  };
+    setSelectedCategory(category)
+    setModifiedCategoryName(category.nom)
+  }
+
+  // Function to set error message
+  const setErrorMessage = (message: string) => {
+    setStatusMessage({ type: "error", message })
+    setTimeout(() => setStatusMessage(null), 5000) // Clear message after 5 seconds
+  }
+
+  // Function to set success message
+  const setSuccessMessage = (message: string) => {
+    setStatusMessage({ type: "success", message })
+    setTimeout(() => setStatusMessage(null), 5000) // Clear message after 5 seconds
+  }
 
   // Function to add a new category
   const handleAddCategory = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
-    setSuccess("");
+    e.preventDefault()
+    setIsLoading(true)
+    setStatusMessage(null)
 
     try {
       if (!newCategoryName.trim()) {
-        throw new Error("Le nom de la catégorie est requis");
+        throw new Error("Le nom de la catégorie est requis")
       }
 
-      const formData = new FormData();
-      formData.append("nom", newCategoryName);
+      const formData = new FormData()
+      formData.append("nom", newCategoryName)
       if (newCategoryLogo) {
-        formData.append("logo", newCategoryLogo);
+        formData.append("logo", newCategoryLogo)
       }
 
       const response = await fetch("/api/categoriesAdmin", {
         method: "POST",
         body: formData,
-      });
+      })
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Erreur lors de l'ajout de la catégorie");
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Erreur lors de l'ajout de la catégorie")
       }
 
-      setSuccess("Catégorie ajoutée avec succès !");
-      setNewCategoryName("");
-      setNewCategoryLogo(null);
-      await fetchCategories();
+      setSuccessMessage("Catégorie ajoutée avec succès !")
+      setNewCategoryName("")
+      setNewCategoryLogo(null)
+      await fetchCategories()
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Une erreur est survenue");
+      setErrorMessage(err instanceof Error ? err.message : "Une erreur est survenue")
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   // Function to modify a category
   const handleModifyCategory = async () => {
     if (!selectedCategory) {
-      setError("Veuillez sélectionner une catégorie");
-      return;
+      setErrorMessage("Veuillez sélectionner une catégorie")
+      return
     }
 
-    setIsLoading(true);
-    setError("");
+    setIsLoading(true)
+    setStatusMessage(null)
 
     try {
-      const formData = new FormData();
-      formData.append("nom", modifiedCategoryName || selectedCategory.nom);
+      const formData = new FormData()
+      formData.append("nom", modifiedCategoryName || selectedCategory.nom)
       if (modifiedCategoryLogo) {
-        formData.append("logo", modifiedCategoryLogo);
+        formData.append("logo", modifiedCategoryLogo)
       }
 
       const response = await fetch(`/api/categoriesAdmin/${selectedCategory.id}`, {
         method: "PUT",
         body: formData,
-      });
+      })
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Erreur lors de la modification");
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Erreur lors de la modification")
       }
 
-      setSuccess("Catégorie modifiée avec succès !");
-      setModifyPopupOpen(false);
-      await fetchCategories();
-      
+      setSuccessMessage("Catégorie modifiée avec succès !")
+      setModifyPopupOpen(false)
+      await fetchCategories()
+
       // Reset form
-      setModifiedCategoryName("");
-      setModifiedCategoryLogo(null);
-      setSelectedCategory(null);
+      setModifiedCategoryName("")
+      setModifiedCategoryLogo(null)
+      setSelectedCategory(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Une erreur est survenue");
+      setErrorMessage(err instanceof Error ? err.message : "Une erreur est survenue")
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   // Function to delete a category
   const handleDeleteCategory = async () => {
     if (!selectedCategory) {
-      setError("Veuillez sélectionner une catégorie");
-      return;
+      setErrorMessage("Veuillez sélectionner une catégorie")
+      return
     }
 
-    setIsLoading(true);
-    setError("");
+    setIsLoading(true)
+    setStatusMessage(null)
 
     try {
       const response = await fetch(`/api/categoriesAdmin/${selectedCategory.id}`, {
         method: "DELETE",
-      });
+      })
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Erreur lors de la suppression");
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Erreur lors de la suppression")
       }
 
-      setSuccess("Catégorie supprimée avec succès !");
-      setDeletePopupOpen(false);
-      await fetchCategories();
-      setSelectedCategory(null);
+      setSuccessMessage("Catégorie supprimée avec succès !")
+      setDeletePopupOpen(false)
+      await fetchCategories()
+      setSelectedCategory(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Une erreur est survenue");
+      setErrorMessage(err instanceof Error ? err.message : "Une erreur est survenue")
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <>
       <Breadcrumb pageName="Gérer les rayons" />
 
+      {statusMessage && (
+        <div
+          className={`mb-4 p-4 rounded-lg ${
+            statusMessage.type === "error" ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"
+          }`}
+        >
+          {statusMessage.message}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 gap-9 sm:grid-cols-2">
         <div className="flex flex-col gap-9">
- {/* Status Messages */}
- {error && (
-                <div className="mt-4 rounded-lg bg-red-100 p-4 text-red-700">
-                  {error}
-                </div>
-              )}
-              {success && (
-                <div className="mt-4 rounded-lg bg-green-100 p-4 text-green-700">
-                  {success}
-                </div>
-              )}
-
           {/* Add Category Form */}
           <div className="rounded-[10px] border border-stroke bg-white shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card">
             <div className="border-b border-stroke px-6.5 py-4 dark:border-dark-3">
-              <h3 className="font-medium text-dark dark:text-white">
-                Ajouter un Rayon
-              </h3>
+              <h3 className="font-medium text-dark dark:text-white">Ajouter un Rayon</h3>
             </div>
 
             <form onSubmit={handleAddCategory}>
               <div className="flex flex-col gap-5.5 p-6.5">
                 <div>
-                  <label className="mb-3 block text-body-sm font-medium text-dark dark:text-white">
-                    Nom du Rayon
-                  </label>
+                  <label className="mb-3 block text-body-sm font-medium text-dark dark:text-white">Nom du Rayon</label>
                   <input
                     type="text"
                     placeholder="Nom du Rayon"
@@ -230,9 +235,7 @@ const FormElements = () => {
                 </div>
 
                 <div>
-                  <label className="mb-3 block text-body-sm font-medium text-dark dark:text-white">
-                    Logo du Rayon
-                  </label>
+                  <label className="mb-3 block text-body-sm font-medium text-dark dark:text-white">Logo du Rayon</label>
                   <input
                     type="file"
                     accept="image/*"
@@ -256,17 +259,16 @@ const FormElements = () => {
           {/* Modify Category Form */}
           <div className="rounded-[10px] border border-stroke bg-white shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card">
             <div className="border-b border-stroke px-6.5 py-4 dark:border-dark-3">
-              <h3 className="font-medium text-dark dark:text-white">
-                Modifier un Rayon
-              </h3>
+              <h3 className="font-medium text-dark dark:text-white">Modifier un Rayon</h3>
             </div>
 
             <div className="flex flex-col gap-5.5 p-6.5">
               <div>
-                <SelectCategories
-                  selectedCategory={selectedCategory}
-                  onCategoryChange={handleCategoryChange}
-                />
+              <SelectCategories 
+                categories={categories} 
+                selectedCategory={selectedCategory} 
+                onCategoryChange={handleCategoryChange} 
+              />
               </div>
 
               <div>
@@ -310,17 +312,16 @@ const FormElements = () => {
           {/* Delete Category Section */}
           <div className="rounded-[10px] border border-stroke bg-white shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card">
             <div className="border-b border-stroke px-6.5 py-4 dark:border-dark-3">
-              <h3 className="font-medium text-dark dark:text-white">
-                Supprimer un Rayon
-              </h3>
+              <h3 className="font-medium text-dark dark:text-white">Supprimer un Rayon</h3>
             </div>
 
             <div className="flex flex-col gap-5.5 p-6.5">
               <div>
-                <SelectCategories
-                  selectedCategory={selectedCategory}
-                  onCategoryChange={handleCategoryChange}
-                />
+              <SelectCategories 
+                categories={categories} 
+                selectedCategory={selectedCategory} 
+                onCategoryChange={handleCategoryChange} 
+              />
               </div>
 
               <button
@@ -331,7 +332,7 @@ const FormElements = () => {
               >
                 Supprimer
               </button>
-            </div>            
+            </div>
           </div>
         </div>
       </div>
@@ -344,7 +345,7 @@ const FormElements = () => {
           isLoading={isLoading}
         />
       )}
-      
+
       {isDeletePopupOpen && (
         <DeletCategorie
           onClose={() => setDeletePopupOpen(false)}
@@ -353,7 +354,7 @@ const FormElements = () => {
         />
       )}
     </>
-  );
-};
+  )
+}
 
-export default FormElements;
+export default FormElements
