@@ -20,7 +20,11 @@ model Utilisateur {
   role          Role
   dateCreation  DateTime   @default(now())
   emailVerified Boolean    @default(false)
+<<<<<<< HEAD
   updatedAt     DateTime   @updatedAt
+=======
+  updatedAt     DateTime  @updatedAt
+>>>>>>> c5b4043 (MAJ BDD/2)
   adresses      Adresse[]
   avis          Avis[]
   Cart          Cart[]
@@ -55,7 +59,10 @@ model Produit {
   promotions      Promotion[]
   variantes       Variante[]
   utilisateurs    Utilisateur[]    @relation("Ajoute")
+<<<<<<< HEAD
   alertState    ProductAlertState?
+=======
+>>>>>>> c5b4043 (MAJ BDD/2)
 }
 
 model Categorie {
@@ -82,7 +89,11 @@ model Promotion {
   dateDebut DateTime
   dateFin   DateTime
   createdAt DateTime @default(now())
+<<<<<<< HEAD
   updatedAt DateTime @updatedAt
+=======
+  updatedAt DateTime  @updatedAt
+>>>>>>> c5b4043 (MAJ BDD/2)
   produit   Produit? @relation(fields: [produitId], references: [id])
 }
 
@@ -91,6 +102,10 @@ model Commande {
   clientId         Int
   statutId         Int
   total            Float
+<<<<<<< HEAD
+=======
+  dateCommande     DateTime                   @default(now())
+>>>>>>> c5b4043 (MAJ BDD/2)
   createdAt        DateTime                   @default(now())
   updatedAt        DateTime                   @updatedAt
   client           Utilisateur                @relation("CommandeClient", fields: [clientId], references: [id])
@@ -243,6 +258,7 @@ enum Role {
   CLIENT
   ADMIN
 }
+<<<<<<< HEAD
 
 model ProductAlertState {
   id            Int      @id @default(autoincrement())
@@ -251,3 +267,5 @@ model ProductAlertState {
   lastAlertType String
   lastAlertDate DateTime
 }
+=======
+>>>>>>> c5b4043 (MAJ BDD/2)
