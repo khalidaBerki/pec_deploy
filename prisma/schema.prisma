@@ -91,7 +91,6 @@ model Commande {
   clientId         Int
   statutId         Int
   total            Float
-  dateCommande     DateTime                   @default(now())
   createdAt        DateTime                   @default(now())
   updatedAt        DateTime                   @updatedAt
   client           Utilisateur                @relation("CommandeClient", fields: [clientId], references: [id])
@@ -115,7 +114,6 @@ model CommandeStatutHistorique {
   id         Int            @id @default(autoincrement())
   commandeId Int
   statutId   Int
-  dateStatut DateTime       @default(now())
   createdAt  DateTime       @default(now())
   updatedAt  DateTime       @updatedAt
   commande   Commande       @relation(fields: [commandeId], references: [id])

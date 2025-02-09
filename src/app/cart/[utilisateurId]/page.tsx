@@ -9,6 +9,8 @@ const UserCartPage = () => {
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
 
   useEffect(() => {
     const fetchCartItems = async () => {
@@ -26,11 +28,13 @@ const UserCartPage = () => {
 
       if (res.ok) {
         const data = await res.json();
-        setCartItems(data);
+        setCartItems(data.cartItems);
+        setUserName(data.userName);
+        setTotalAmount(data.totalAmount);
       } else {
         const errorData = await res.json();
         setError(errorData.message);
-        if (res.status === 403) {
+        if (res.status === 401 || res.status === 403) {
           router.push('/auth/login');
         }
       }
@@ -67,15 +71,58 @@ const UserCartPage = () => {
             ).filter((item) => item.quantite > 0)
           );
         }
+        const updatedTotalAmount = cartItems.reduce((total, item) => total + item.prix * item.quantite, 0);
+        setTotalAmount(updatedTotalAmount);
       } else {
         const errorData = await res.json();
         setError(errorData.message);
+        if (res.status === 401 || res.status === 403) {
+          router.push('/auth/login');
+        }
       }
     } catch (error) {
       console.error('Erreur lors de la suppression du produit du panier:', error);
       setError('Erreur lors de la suppression du produit du panier');
     }
   };
+
+  const handlePlaceOrder = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/auth/login');
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/cart/${utilisateurId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        alert('Commande créée avec succès.');
+        router.push(`/orders/${data.order.id}`); // Rediriger vers la page de la commande
+      } else {
+        const errorData = await res.json();
+        setError(errorData.message);
+        if (res.status === 401 || res.status === 403) {
+          router.push('/auth/login');
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors de la création de la commande:', error);
+      setError('Erreur lors de la création de la commande');
+    }
+  };
+
+  useEffect(() => {
+    const updatedTotalAmount = cartItems.reduce((total, item) => total + item.prix * item.quantite, 0);
+    setTotalAmount(updatedTotalAmount);
+  }, [cartItems]);
 
   if (loading) {
     return <p>Chargement...</p>;
@@ -87,24 +134,28 @@ const UserCartPage = () => {
 
   return (
     <div>
-      <h1>Panier de l'utilisateur {utilisateurId}</h1>
+      <h1>Panier de {userName}</h1>
       {cartItems.length === 0 ? (
         <p>Aucun produit dans le panier.</p>
       ) : (
-        <ul>
-          {cartItems.map((item) => (
-            <li key={item.id}>
-              <div>
-                <img src={item.image} alt={item.produit.nom} width="100" />
-                <h3>{item.produit.nom}</h3>
-                <p>Quantité : {item.quantite}</p>
-                <p>Prix : {item.prix}€</p>
-                <button onClick={() => handleRemoveItem(item.produitId)}>Diminuer la quantité</button>
-                <button onClick={() => handleRemoveItem(item.produitId, true)}>Supprimer</button>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <div>
+          <ul>
+            {cartItems.map((item) => (
+              <li key={item.id}>
+                <div>
+                  <img src={item.image} alt={item.produit.nom} width="100" />
+                  <h3>{item.produit.nom}</h3>
+                  <p>Quantité : {item.quantite}</p>
+                  <p>Prix : {item.prix}€</p>
+                  <button onClick={() => handleRemoveItem(item.produitId)}>Diminuer la quantité</button>
+                  <button onClick={() => handleRemoveItem(item.produitId, true)}>Supprimer</button>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <h2>Total du panier : {totalAmount}€</h2>
+          <button onClick={handlePlaceOrder}>Valider le panier et passer commande</button>
+        </div>
       )}
     </div>
   );
