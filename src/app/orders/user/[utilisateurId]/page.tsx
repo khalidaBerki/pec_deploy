@@ -26,7 +26,8 @@ const UserOrdersPage = () => {
 
       if (res.ok) {
         const data = await res.json();
-        setOrders(data);
+        const filteredOrders = data.filter((order: any) => order.statutId === 2); // Filtrer les commandes avec statut "2"
+        setOrders(filteredOrders);
       } else {
         const errorData = await res.json();
         setError(errorData.message);

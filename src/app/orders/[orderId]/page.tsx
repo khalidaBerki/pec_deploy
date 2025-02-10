@@ -40,10 +40,6 @@ const OrderPage = () => {
     fetchOrder();
   }, [orderId, router]);
 
-  const handlePayOrder = () => {
-    alert('Paiement fictif effectué avec succès.');
-  };
-
   if (loading) {
     return <p>Chargement...</p>;
   }
@@ -68,7 +64,6 @@ const OrderPage = () => {
           </li>
         ))}
       </ul>
-      <button onClick={handlePayOrder}>Payer la commande</button>
     </div>
   );
 };

@@ -86,36 +86,24 @@ const UserCartPage = () => {
     }
   };
 
-  const handlePlaceOrder = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/auth/login');
-      return;
-    }
-
+  const handleCheckout = async () => {
     try {
+      const token = localStorage.getItem("token");
+
       const res = await fetch(`/api/cart/${utilisateurId}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        alert('Commande créée avec succès.');
-        router.push(`/orders/${data.order.id}`); // Rediriger vers la page de la commande
-      } else {
-        const errorData = await res.json();
-        setError(errorData.message);
-        if (res.status === 401 || res.status === 403) {
-          router.push('/auth/login');
-        }
-      }
-    } catch (error) {
-      console.error('Erreur lors de la création de la commande:', error);
-      setError('Erreur lors de la création de la commande');
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+
+      window.location.href = data.url; // Redirige vers Stripe
+    } catch (err: any) {
+      console.error("Erreur de paiement:", err.message);
     }
   };
 
@@ -154,7 +142,7 @@ const UserCartPage = () => {
             ))}
           </ul>
           <h2>Total du panier : {totalAmount}€</h2>
-          <button onClick={handlePlaceOrder}>Valider le panier et passer commande</button>
+          <button onClick={handleCheckout}>Valider le panier et passer commande</button>
         </div>
       )}
     </div>
