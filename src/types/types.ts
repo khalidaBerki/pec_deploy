@@ -1,4 +1,5 @@
 export interface Categorie {
+    logo: any;
     id: number;
     nom: string;
   }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Categorie } from '@/types/types';
+import { Categorie, Prisma } from '@prisma/client';
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Categorie[]>([]);
@@ -24,22 +24,30 @@ export default function CategoriesPage() {
   }, []);
 
   return (
-    <div className="p-4">
-      <h1 className="text-3xl font-bold mb-6">Catégories</h1>
-      <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {Array.isArray(categories) && categories.map((category) => (
-          <li
-            key={category.id}
-            className="p-4 border rounded-lg shadow hover:shadow-lg transition"
-          >
-            <Link href={`/categories/${category.id}`} passHref>
-              <div className="block w-full h-full">
-                <h3 className="text-sm text-gray-700">{category.nom}</h3>
-              </div>
-            </Link>
-          </li>
-        ))}
-      </ul>
+    <div className="bg-white">
+      <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+        <h1 className="text-3xl font-bold mb-6 text-center">Catégories</h1>
+        <ul className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 xl:gap-x-8 ">
+          {Array.isArray(categories) && categories.map((category) => (
+            <li
+              key={category.id}
+              className="group shadow-lg p-4 rounded-lg overflow-hidden"
+            >
+              <Link href={`/categories/${category.id}`} passHref>
+                {category.logo ? (
+                <img
+                  src={category.logo}
+                  alt={category.nom}
+                  className="aspect-square w-full rounded-lg bg-gray-200 object-cover group-hover:opacity-75 xl:aspect-7/8"
+                />
+                ) : null}
+                <h3 className="mt-4 text-m text-gray-700 font-bold text-center">{category.nom}</h3>
+                
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

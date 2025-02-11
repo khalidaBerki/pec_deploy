@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export async function GET(req: Request, context: { params: { categoryId: string } }) {
-  const { categoryId } = context.params;
+  const { categoryId } = await context.params;
 
   try {
     const categoryIdInt = parseInt(categoryId);
