@@ -12,6 +12,7 @@ const config: Config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "app/**/*.{ts,tsx}",
     "components/**/*.{ts,tsx}",
+    "*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     fontFamily: {
@@ -26,7 +27,8 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
+        sans: ["Satoshi", "Inter", ...defaultTheme.fontFamily.sans],
+        satoshi: ["Satoshi", "sans-serif"],
       },
       textColor: {
         foreground: "hsl(var(--foreground))",
@@ -124,7 +126,6 @@ const config: Config = {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
-          solid: "#5750F1",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
