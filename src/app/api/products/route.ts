@@ -11,8 +11,8 @@ export async function GET() {
     });
 
     return NextResponse.json(products); // Retourner les produits en JSON
-  } catch (error) {
-    console.error('Erreur API produits:', error);
+  } catch (error: any) {
+    console.error('Erreur API produits:', error.message || error);
     return NextResponse.json({ error: 'Erreur lors de la récupération des produits' }, { status: 500 });
   }
 }

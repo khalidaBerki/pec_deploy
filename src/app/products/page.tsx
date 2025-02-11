@@ -74,41 +74,42 @@ export default function ProductsPage() {
   if (error) return <div className="text-center text-red-600 p-4">{error}</div>;
 
   return (
-    <div className="p-4">
-      <h1 className="text-3xl font-bold mb-6 text-center">Tous les produits</h1>
+    <div className="bg-white">
+      <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+        <h1 className="text-3xl font-bold mb-6 text-center">Tous les produits</h1>
 
-      {products.length > 0 ? (
-        <ul className="py-12 max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-8">
-          {products.map((product) => (
-            <li
-              key={product.id}
-              className="w-72 rounded shadow-lg mx-auto border border-gray-200 p-4 bg-white"
-            >
-              <Link href={`/products/${product.id}`} className="block">
-                {product.image ? (
-                  <img
-                    src={product.image}
-                    alt={product.nom}
-                    className="w-full h-48 object-cover rounded-lg shadow mb-3"
-                  />
-                ) : null}
-                <h3 className="text-xl font-semibold mb-1">{product.nom}</h3>
-                <p className="text-gray-600 text-sm mb-1">{product.description}</p>
-                <p className="text-green-600 font-medium text-lg">Prix : {product.prix} €</p>
-                <p className="text-sm text-gray-500">Stock : {product.stock}</p>
-              </Link>
-              <button
-                onClick={() => addToCart(product)}
-                className="mt-4 w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+        {products.length > 0 ? (
+          <ul className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+            {products.map((product) => (
+              <li
+                key={product.id}
+                className="group"
               >
-                Ajouter au panier
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-center text-gray-600">Aucun produit trouvé.</p>
-      )}
+                <Link href={`/products/${product.id}`} className="block">
+                  {product.image ? (
+                    <img
+                      src={product.image}
+                      alt={product.nom}
+                      className="aspect-square w-full rounded-lg bg-gray-200 object-cover group-hover:opacity-75 xl:aspect-7/8"
+                    />
+                  ) : null}
+                  <h3 className="mt-4 text-m text-gray-700 font-bold">{product.nom}</h3>
+                  <p className="text-gray-600 text-sm mb-1">{product.description}</p>
+                  <p className="text-green-600 font-medium text-lg">Prix : {product.prix} €</p>
+                </Link>
+                <button
+                  onClick={() => addToCart(product)}
+                  className="mt-4 w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+                >
+                  Ajouter au panier
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-center text-gray-600">Aucun produit trouvé.</p>
+        )}
+      </div>
     </div>
   );
 }

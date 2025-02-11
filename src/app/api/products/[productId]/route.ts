@@ -25,8 +25,12 @@ export async function GET(req: Request, context: { params: { productId: string }
     }
 
     return NextResponse.json(product);  // Retourner le produit complet ou vous pouvez spécifier un `select`
-  } catch (error) {
-    console.error(error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    } else {
+      console.error("Unknown error occurred");
+    }
     return NextResponse.json({ message: "Erreur lors de la récupération du produit" }, { status: 500 });
   }
 }

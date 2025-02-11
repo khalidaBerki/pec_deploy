@@ -12,8 +12,12 @@ export async function GET() {
     }
 
     return NextResponse.json(categories);
-  } catch (error) {
-    console.error('Erreur API catégories:', error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Erreur API catégories:', error.message);
+    } else {
+      console.error("Unknown error occurred");
+    }
     return NextResponse.json({ error: 'Erreur lors de la récupération des catégories' }, { status: 500 });
   }
 }

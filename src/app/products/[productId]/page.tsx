@@ -79,23 +79,22 @@ export default function ProductPage() {
   if (error) return <div className="text-center text-red-600 p-4">{error}</div>;
 
   return (
-    <div className="p-4 max-w-3xl mx-auto bg-white shadow-md rounded-lg">
+    <div className="flex flex-col justify-center px-2 py-12 my-12 mx-auto w-3/4 aspect-square bg-white shadow-lg rounded-lg">
       {product ? (
         <>
           {product.image && (
             <img
               src={product.image}
               alt={product.nom}
-              className="w-full max-w-md mx-auto rounded-lg shadow-md mb-4"
+              className="h-40 w-full object-cover rounded-md"
             />
           )}
-          <h1 className="text-3xl font-bold mb-2">{product.nom}</h1>
+          <h1 className="mt-4 text-base text-gray-700 font-bold">{product.nom}</h1>
           <p className="text-gray-600 mb-2">{product.description}</p>
-          <p className="text-green-600 font-medium text-lg">Prix : {product.prix} €</p>
-          <p className="text-sm text-gray-500 mb-4">Stock : {product.stock}</p>
+          <p className="text-gray-600 font-medium text-lg">Prix : {product.prix} €</p>
           <button
             onClick={() => addToCart(product)}
-            className="w-full md:w-auto px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+            className="w-full mt-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
           >
             Ajouter au panier
           </button>
@@ -104,5 +103,8 @@ export default function ProductPage() {
         <p className="text-center text-gray-600">Produit non trouvé.</p>
       )}
     </div>
+
+
+
   );
 }
