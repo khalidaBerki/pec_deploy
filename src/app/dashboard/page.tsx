@@ -1,25 +1,3 @@
-<<<<<<< HEAD
-import ECommerce from "@/components/Dashboard/E-commerce";
-import { Metadata } from "next";
-import DefaultLayout from "@/components/Layouts/DefaultLaout";
-import React from "react";
-
-export const metadata: Metadata = {
-  title:
-    "Smart Drive",
-  description: "This is Smart Drive Dashboard for Admin",
-};
-
-export default function Home() {
-  return (
-    <>
-      <DefaultLayout>
-        <ECommerce />
-      </DefaultLayout>
-    </>
-  );
-}
-=======
 'use client'; // Directive pour indiquer que le fichier est un composant client
 
 import { useEffect, useState } from "react";
@@ -57,4 +35,3 @@ export default function Home() {
     </DefaultLayout>
   );
 }
->>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
