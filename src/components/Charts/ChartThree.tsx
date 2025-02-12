@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-import { ApexOptions } from "apexcharts";
-import React from "react";
-import ReactApexChart from "react-apexcharts";
-import DefaultSelectOption from "@/components/SelectOption/DefaultSelectOption";
-
-const ChartThree: React.FC = () => {
-  const series = [65, 34, 12, 56];
-=======
 "use client"
 
 import type { ApexOptions } from "apexcharts"
@@ -41,7 +32,6 @@ const ChartThree: React.FC = () => {
   }, [timeRange])
 
   const series = data.map((item) => item.count)
->>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
 
   const options: ApexOptions = {
     chart: {
@@ -49,19 +39,11 @@ const ChartThree: React.FC = () => {
       type: "donut",
     },
     colors: ["#5750F1", "#5475E5", "#8099EC", "#ADBCF2"],
-<<<<<<< HEAD
-    labels: ["Desktop", "Tablet", "Mobile", "Unknown"],
-=======
     labels: data.map((item) => item.status),
->>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
     legend: {
       show: false,
       position: "bottom",
     },
-<<<<<<< HEAD
-
-=======
->>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
     plotOptions: {
       pie: {
         donut: {
@@ -72,11 +54,7 @@ const ChartThree: React.FC = () => {
             total: {
               show: true,
               showAlways: true,
-<<<<<<< HEAD
-              label: "Visitors",
-=======
               label: "Commandes",
->>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
               fontSize: "16px",
               fontWeight: "400",
             },
@@ -110,24 +88,12 @@ const ChartThree: React.FC = () => {
         },
       },
     ],
-<<<<<<< HEAD
-  };
-=======
   }
->>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
 
   return (
     <div className="col-span-12 rounded-[10px] bg-white px-7.5 pb-7 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card xl:col-span-5">
       <div className="mb-9 justify-between gap-4 sm:flex">
         <div>
-<<<<<<< HEAD
-          <h4 className="text-body-2xlg font-bold text-dark dark:text-white">
-            Used Devices
-          </h4>
-        </div>
-        <div>
-          <DefaultSelectOption options={["Monthly", "Yearly"]} />
-=======
           <h4 className="text-body-2xlg font-bold text-dark dark:text-white">Statuts des commandes</h4>
         </div>
         <div>
@@ -135,7 +101,6 @@ const ChartThree: React.FC = () => {
             options={["Mensuel", "Annuel"]}
             onChange={(value: string) => setTimeRange(value.toLowerCase() as "monthly" | "yearly")}
           />
->>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
         </div>
       </div>
 
@@ -147,51 +112,6 @@ const ChartThree: React.FC = () => {
 
       <div className="mx-auto w-full max-w-[350px]">
         <div className="-mx-7.5 flex flex-wrap items-center justify-center gap-y-2.5">
-<<<<<<< HEAD
-          <div className="w-full px-7.5 sm:w-1/2">
-            <div className="flex w-full items-center">
-              <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-blue"></span>
-              <p className="flex w-full justify-between text-body-sm font-medium text-dark dark:text-dark-6">
-                <span> Desktop </span>
-                <span> 65% </span>
-              </p>
-            </div>
-          </div>
-          <div className="w-full px-7.5 sm:w-1/2">
-            <div className="flex w-full items-center">
-              <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-blue-light"></span>
-              <p className="flex w-full justify-between text-body-sm font-medium text-dark dark:text-dark-6">
-                <span> Tablet </span>
-                <span> 34% </span>
-              </p>
-            </div>
-          </div>
-          <div className="w-full px-7.5 sm:w-1/2">
-            <div className="flex w-full items-center">
-              <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-blue-light-2"></span>
-              <p className="flex w-full justify-between text-body-sm font-medium text-dark dark:text-dark-6">
-                <span> Mobile </span>
-                <span> 45% </span>
-              </p>
-            </div>
-          </div>
-          <div className="w-full px-7.5 sm:w-1/2">
-            <div className="flex w-full items-center">
-              <span className="mr-2 block h-3 w-full max-w-3 rounded-full bg-blue-light-3"></span>
-              <p className="flex w-full justify-between text-body-sm font-medium text-dark dark:text-dark-6">
-                <span> Unknown </span>
-                <span> 12% </span>
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default ChartThree;
-=======
           {data.map((item, index) => (
             <div key={item.id} className="w-full px-7.5 sm:w-1/2">
               <div className="flex w-full items-center">
@@ -211,4 +131,3 @@ export default ChartThree;
 
 export default ChartThree
 
->>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf

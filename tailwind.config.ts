@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-import type { Config } from "tailwindcss";
-import defaultTheme from "tailwindcss/defaultTheme";
-
-const config: Config = {
-=======
 import type { Config } from "tailwindcss"
 import defaultTheme from "tailwindcss/defaultTheme"
 const { fontFamily } = require("tailwindcss/defaultTheme")
@@ -12,18 +6,10 @@ const { fontFamily } = require("tailwindcss/defaultTheme")
 
 const config: Config = {
   darkMode: ["class"],
->>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-<<<<<<< HEAD
-  ],
-  darkMode: "class",
-  theme: {
-    fontFamily: {
-      satoshi: ["Satoshi", "sans-serif"],
-=======
     "app/**/*.{ts,tsx}",
     "components/**/*.{ts,tsx}",
   ],
@@ -31,7 +17,6 @@ const config: Config = {
     fontFamily: {
       satoshi: ["Satoshi", "sans-serif"],
       sans: ["var(--font-sans)", ...fontFamily.sans],
->>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
     },
     screens: {
       "2xsm": "375px",
@@ -40,8 +25,6 @@ const config: Config = {
       ...defaultTheme.screens,
     },
     extend: {
-<<<<<<< HEAD
-=======
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },
@@ -54,15 +37,10 @@ const config: Config = {
       borderColor: {
         border: "var(--border)",
       },
->>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
       colors: {
         current: "currentColor",
         transparent: "transparent",
         white: "#FFFFFF",
-<<<<<<< HEAD
-        primary: "#5750F1",
-=======
->>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
         stroke: "#E6EBF1",
         "stroke-dark": "#27303E",
         dark: {
@@ -138,8 +116,6 @@ const config: Config = {
             4: "#FFFBEB",
           },
         },
-<<<<<<< HEAD
-=======
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -174,7 +150,6 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
->>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
       },
       fontSize: {
         "heading-1": ["60px", "72px"],
@@ -372,12 +347,7 @@ const config: Config = {
         "card-8": "0px 1px 2px 0px rgba(0, 0, 0, 0.10)",
         "card-9": "0px 1px 3px 0px rgba(0, 0, 0, 0.08)",
         "card-10": "0px 2px 3px 0px rgba(0, 0, 0, 0.10)",
-<<<<<<< HEAD
-        switcher:
-          "0px 2px 4px rgba(0, 0, 0, 0.2), inset 0px 2px 2px #FFFFFF, inset 0px -1px 1px rgba(0, 0, 0, 0.1)",
-=======
         switcher: "0px 2px 4px rgba(0, 0, 0, 0.2), inset 0px 2px 2px #FFFFFF, inset 0px -1px 1px rgba(0, 0, 0, 0.1)",
->>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
         "switch-1": "0px 0px 4px 0px rgba(0, 0, 0, 0.10)",
         "switch-2": "0px 0px 5px 0px rgba(0, 0, 0, 0.15)",
         datepicker: "-5px 0 0 #1f2a37, 5px 0 0 #1f2a37",
@@ -400,10 +370,6 @@ const config: Config = {
       keyframes: {
         linspin: {
           "100%": { transform: "rotate(360deg)" },
-<<<<<<< HEAD
-          
-=======
->>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
         },
         easespin: {
           "12.5%": { transform: "rotate(135deg)" },
@@ -447,35 +413,19 @@ const config: Config = {
         },
 
         fadeInDown: {
-<<<<<<< HEAD
-          '0%': { opacity: '0', transform: 'translateY(-10px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
-        fadeOutUp: {
-          '0%': { opacity: '1', transform: 'translateY(0)' },
-          '100%': { opacity: '0', transform: 'translateY(-10px)' },
-=======
           "0%": { opacity: "0", transform: "translateY(-10px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
         fadeOutUp: {
           "0%": { opacity: "1", transform: "translateY(0)" },
           "100%": { opacity: "0", transform: "translateY(-10px)" },
->>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
         },
       },
       animation: {
         linspin: "linspin 1568.2353ms linear infinite",
         easespin: "easespin 5332ms cubic-bezier(0.4, 0, 0.2, 1) infinite both",
-<<<<<<< HEAD
-        "left-spin":
-          "left-spin 1333ms cubic-bezier(0.4, 0, 0.2, 1) infinite both",
-        "right-spin":
-          "right-spin 1333ms cubic-bezier(0.4, 0, 0.2, 1) infinite both",
-=======
         "left-spin": "left-spin 1333ms cubic-bezier(0.4, 0, 0.2, 1) infinite both",
         "right-spin": "right-spin 1333ms cubic-bezier(0.4, 0, 0.2, 1) infinite both",
->>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
         "ping-once": "ping 5s cubic-bezier(0, 0, 0.2, 1)",
         rotating: "rotating 30s linear infinite",
         topbottom: "topbottom 60s infinite alternate linear",
@@ -486,16 +436,6 @@ const config: Config = {
         line1: "line 10s infinite linear",
         line2: "line-revert 8s infinite linear",
         line3: "line 7s infinite linear",
-<<<<<<< HEAD
-        'fade-in-down': 'fadeInDown 0.5s ease-out',
-        'fade-out-up': 'fadeOutUp 0.5s ease-in',
-      },
-    },
-  },
-  plugins: [],
-};
-export default config;
-=======
         "fade-in-down": "fadeInDown 0.5s ease-out",
         "fade-out-up": "fadeOutUp 0.5s ease-in",
       },
@@ -510,4 +450,3 @@ export default config;
 }
 export default config
 
->>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf

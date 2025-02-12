@@ -1,29 +1,3 @@
-<<<<<<< HEAD
-"use client";
-import React, { useState } from "react";
-
-const SelectProduct: React.FC = () => {
-  const [selectedOption, setSelectedOption] = useState<string>("");
-  const [isOptionSelected, setIsOptionSelected] = useState<boolean>(false);
-
-  const changeTextColor = () => {
-    setIsOptionSelected(true);
-  };
-
-  return (
-    <div className="">
-      <label className="mb-3 block text-body-sm font-medium text-dark dark:text-white">
-       Selectionner un Produit
-      </label>
-
-      <div className="relative z-20 bg-transparent dark:bg-dark-2">
-        <select
-          value={selectedOption}
-          onChange={(e) => {
-            setSelectedOption(e.target.value);
-            changeTextColor();
-          }}
-=======
 "use client"
 
 import type React from "react"
@@ -113,25 +87,11 @@ const SelectProduct: React.FC<SelectProductProps> = ({
         <select
           value={selectedValue}
           onChange={handleSelectionChange}
->>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
           className={`relative z-20 w-full appearance-none rounded-[7px] border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary ${
             isOptionSelected ? "text-dark dark:text-white" : ""
           }`}
         >
           <option value="" disabled className="text-dark-6">
-<<<<<<< HEAD
-            Sélectionner votre Produit 
-          </option>
-          <option value="USA" className="text-dark-6">
-            a
-          </option>
-          <option value="UK" className="text-dark-6">
-            b
-          </option>
-          <option value="Canada" className="text-dark-6">
-            c
-          </option>
-=======
             Sélectionner votre Produit
           </option>
           {filteredProducts.map((product) => (
@@ -139,7 +99,6 @@ const SelectProduct: React.FC<SelectProductProps> = ({
               {product.nom}
             </option>
           ))}
->>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
         </select>
 
         <span className="absolute right-4 top-1/2 z-30 -translate-y-1/2">
@@ -159,15 +118,8 @@ const SelectProduct: React.FC<SelectProductProps> = ({
         </span>
       </div>
     </div>
-<<<<<<< HEAD
-  );
-};
-
-export default SelectProduct;
-=======
   )
 }
 
 export default SelectProduct
 
->>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
