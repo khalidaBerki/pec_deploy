@@ -515,9 +515,10 @@
 
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, Brain, Camera, Upload, Send, Loader2 } from "lucide-react"
+import { X, Brain, Camera, Upload, Send, Loader2, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
+import Link from "next/link"
 
 interface Message {
   type: "assistant" | "user"
@@ -528,15 +529,6 @@ interface Ingredient {
   name: string
   quantity?: string
   unit?: string
-}
-
-interface Recipe {
-  title: string
-  ingredients: Ingredient[]
-  additional_ingredients: Ingredient[]
-  instructions: string[]
-  cooking_time: string
-  difficulty: string
 }
 
 export function AIShoppingAssistant({ isOpen: initialIsOpen = false }) {
@@ -550,7 +542,6 @@ export function AIShoppingAssistant({ isOpen: initialIsOpen = false }) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [showCamera, setShowCamera] = useState(false)
   const [detectedIngredients, setDetectedIngredients] = useState<Ingredient[]>([])
-  const [suggestedRecipes, setSuggestedRecipes] = useState<Recipe[]>([])
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY)
@@ -562,11 +553,14 @@ export function AIShoppingAssistant({ isOpen: initialIsOpen = false }) {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
     }
-  }, [chatContainerRef]) //Fixed unnecessary dependency
+  }, [chatContainerRef]) // Corrected dependency
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
-      sendMessage("Bonjour, comment puis-je vous aider aujourd'hui ?", "assistant")
+      sendMessage(
+        "Bonjour ! Je suis votre assistant culinaire IA. Comment puis-je vous aider aujourd'hui ? 🍽️",
+        "assistant",
+      )
     }
   }, [isOpen])
 
@@ -618,7 +612,7 @@ export function AIShoppingAssistant({ isOpen: initialIsOpen = false }) {
 
   const analyzeImage = async (photo: string) => {
     setIsLoading(true)
-    sendMessage("Image téléchargée", "user")
+    sendMessage("Image téléchargée. Analyse en cours...", "assistant")
 
     try {
       const response = await fetch("/api/analyze-image", {
@@ -634,51 +628,14 @@ export function AIShoppingAssistant({ isOpen: initialIsOpen = false }) {
       const data = await response.json()
       setDetectedIngredients(data.ingredients)
 
-      const ingredientsList = data.ingredients
-        .map((ing: Ingredient) => `${ing.name} (${ing.quantity} ${ing.unit})`)
-        .join(", ")
+      const ingredientsList = data.ingredients.map((ing: Ingredient) => ing.name).join(", ")
       sendMessage(
-        `J'ai détecté les ingrédients suivants : ${ingredientsList}. Le plat semble être ${data.dish}. Voulez-vous que je vous suggère des recettes basées sur ces ingrédients ?`,
+        `J'ai détecté les ingrédients suivants : ${ingredientsList}. Que souhaitez-vous cuisiner avec ces ingrédients ? 🍳`,
         "assistant",
       )
     } catch (error) {
       console.error("Erreur lors de l'analyse de l'image:", error)
       sendMessage("Désolé, une erreur s'est produite lors de l'analyse de l'image. Veuillez réessayer.", "assistant")
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const generateRecipes = async () => {
-    setIsLoading(true)
-    try {
-      const response = await fetch("/api/generate-recipes", {
-        //Fixed: changed const to let
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ingredients: detectedIngredients.map((ing) => ing.name) }),
-      })
-
-      if (!response.ok) {
-        throw new Error("Erreur lors de la génération des recettes")
-      }
-
-      const data = await response.json()
-      setSuggestedRecipes(data.recipes)
-
-      const recipesList = data.recipes
-        .map((recipe: Recipe, index: number) => `${index + 1}. ${recipe.title}`)
-        .join("\n")
-      sendMessage(
-        `Voici quelques suggestions de recettes basées sur vos ingrédients :\n\n${recipesList}\n\nQuelle recette souhaitez-vous voir en détail ?`,
-        "assistant",
-      )
-    } catch (error) {
-      console.error("Erreur lors de la génération des recettes:", error)
-      sendMessage(
-        "Désolé, une erreur s'est produite lors de la génération des recettes. Veuillez réessayer.",
-        "assistant",
-      )
     } finally {
       setIsLoading(false)
     }
@@ -719,6 +676,31 @@ export function AIShoppingAssistant({ isOpen: initialIsOpen = false }) {
     setUserInput("")
   }
 
+  const renderMessage = (message: Message) => {
+    const content = message.content
+    const productLinkRegex = /\[Voir les produits\]$$(\/products\?[^$$]+)\)/
+    const match = content.match(productLinkRegex)
+
+    if (match) {
+      const [fullMatch, url] = match
+      const parts = content.split(fullMatch)
+      return (
+        <>
+          {parts[0]}
+          <Link href={url} className="text-blue-500 hover:underline">
+            <Button variant="outline" size="sm" className="mt-2">
+              <ShoppingCart className="mr-2 h-4 w-4" />
+              Voir les produits
+            </Button>
+          </Link>
+          {parts[1]}
+        </>
+      )
+    }
+
+    return content
+  }
+
   return (
     <div
       className="fixed z-50 transition-all duration-300 ease-in-out"
@@ -741,7 +723,7 @@ export function AIShoppingAssistant({ isOpen: initialIsOpen = false }) {
               <div className="flex justify-between items-center p-4 border-b dark:border-gray-700">
                 <div className="flex items-center space-x-3">
                   <Brain className="h-6 w-6 text-primary" />
-                  <h3 className="text-lg font-semibold">YumiMind IA</h3>
+                  <h3 className="text-lg font-semibold">Assistant Culinaire IA</h3>
                 </div>
                 <Button
                   variant="ghost"
@@ -773,7 +755,7 @@ export function AIShoppingAssistant({ isOpen: initialIsOpen = false }) {
                         message.type === "assistant" ? "bg-white dark:bg-gray-800" : "bg-blue-500 text-white ml-12"
                       }`}
                     >
-                      <p className="text-sm whitespace-pre-line">{message.content}</p>
+                      <p className="text-sm whitespace-pre-line">{renderMessage(message)}</p>
                     </div>
                   </div>
                 ))}
@@ -870,6 +852,4 @@ export function AIShoppingAssistant({ isOpen: initialIsOpen = false }) {
     </div>
   )
 }
-
-
 

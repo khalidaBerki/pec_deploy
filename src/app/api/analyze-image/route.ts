@@ -21,35 +21,22 @@ export async function POST(request: Request) {
     console.log("📸 Analyse de l'image en cours...")
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4-o",
       messages: [
         {
           role: "system",
-          content: `
-            Tu es une API d'intelligence artificielle utilisée par un Drive alimentaire, spécialisée dans la reconnaissance d'images et la génération de recettes de cuisine.
-
-            🎯 **Tes capacités :**
-            - Identifier les **ingrédients** d'un plat à partir d'une **photo** envoyée par l'utilisateur.
-            - Proposer des **recettes adaptées** en fonction des ingrédients détectés ou demandés par l'utilisateur.
-            - Si un ingrédient **manque** dans la base de produits, envoyer une **alerte à l'administrateur**.
-            - Permettre à l'utilisateur d'écrire ce qu'il **a envie de manger aujourd'hui** et suggérer des plats correspondants.
-            - Présenter les recettes sous une **forme attrayante**, avec des **étapes numérotées et des instructions bien structurées**.
-
-            📌 **Règles pour tes réponses :**
-            - Pour chaque **recette générée**, mets en évidence les **verbes d'action** en les entourant d'un \`<span class="font-bold text-blue-500"></span>\`.
-            - Rends tes explications **claires**, avec un **ton amical et engageant**.
-            - Si l'utilisateur mentionne un plat sans donner d'ingrédients, devine la recette en fonction de plats populaires et propose plusieurs options.
-          `,
+          content:
+            "Vous êtes un assistant spécialisé dans l'analyse d'images de nourriture. Votre tâche est d'identifier les ingrédients visibles dans l'image et de les lister.",
         },
         {
           role: "user",
           content: [
-            { type: "text", text: "Quels ingrédients peux-tu identifier dans cette image ?" },
+            { type: "text", text: "Identifiez les ingrédients visibles dans cette image de nourriture." },
             { type: "image_url", image_url: { url: image } },
           ],
         },
       ],
-      response_format: { type: "json_object" },
+      max_tokens: 300,
     })
 
     const content = response.choices[0]?.message?.content
@@ -61,20 +48,16 @@ export async function POST(request: Request) {
 
     console.log("✅ Réponse reçue :", content)
 
-    const parsedContent = JSON.parse(content)
+    // Extraction des ingrédients depuis la réponse
+    const ingredients = content
+      .split("\n")
+      .filter((item) => item.trim() !== "" && item.startsWith("-"))
+      .map((item) => ({ name: item.replace(/^-\s*/, "").trim() }))
 
-    return NextResponse.json(parsedContent)
+    return NextResponse.json({ ingredients })
   } catch (error: any) {
     console.error("❌ Erreur lors de l'analyse de l'image :", error)
-
-    let errorMessage = "Erreur inconnue."
-    if (error.response) {
-      errorMessage = `Erreur OpenAI: ${error.response.data.error.message || "Réponse invalide."}`
-    } else if (error.message) {
-      errorMessage = `Erreur: ${error.message}`
-    }
-
-    return NextResponse.json({ error: errorMessage }, { status: 500 })
+    return NextResponse.json({ error: "Erreur lors de l'analyse de l'image" }, { status: 500 })
   }
 }
 
