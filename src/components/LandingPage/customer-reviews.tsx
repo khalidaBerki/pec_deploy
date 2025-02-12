@@ -83,7 +83,7 @@ export function CustomerReviews() {
         <h2 className="text-3xl font-bold text-center mb-12">Ce que disent nos clients</h2>
         <div className="relative max-w-5xl mx-auto">
           <AnimatePresence mode="wait">
-            {!reviews ? (
+            {!Array.isArray(reviews) ? (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

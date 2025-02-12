@@ -1,23 +1,36 @@
+'use client';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Suppliers from "@/components/lists/suppliers";
 
-
-import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLaout";
 
-export const metadata: Metadata = {
-  title: "IA Drive PEC",
-  description: " Application Drive alimentaire enrichie par IA pour Admin ",
-};
-
 const TablesPage = () => {
+  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const res = await fetch("/api/checkAuth");
+      if (res.status === 200) {
+        setIsAuthenticated(true);
+      } else {
+        router.push("/");
+      }
+    };
+    checkAuth();
+  }, [router]);
+
+  if (!isAuthenticated) {
+    return null; // or a loading spinner
+  }
+
   return (
     <DefaultLayout>
       <Breadcrumb pageName="Liste fournisseurs" />
-
       <div className="flex flex-col gap-10">
         <Suppliers />
-
       </div>
     </DefaultLayout>
   );

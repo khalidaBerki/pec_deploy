@@ -1,15 +1,23 @@
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb"
-import OrderTable from "@/components/lists/OrderTable"
-
-import type { Metadata } from "next"
-import DefaultLayout from "@/components/Layouts/DefaultLaout"
-
-export const metadata: Metadata = {
-  title: "IA Drive PEC - Commandes",
-  description: "Application de drive alimentaire enrichie par IA pour Admin - Gestion des commandes",
-}
+"use client";
+import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
+import OrderTable from "@/components/lists/OrderTable";
+import DefaultLayout from "@/components/Layouts/DefaultLaout";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const OrdersPage = () => {
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const res = await fetch("/api/checkAuth");
+      if (res.status !== 200) {
+        router.push("/");
+      }
+    };
+    checkAuth();
+  }, [router]);
+
   return (
     <DefaultLayout>
       <Breadcrumb pageName="Liste des Commandes" />
@@ -18,8 +26,8 @@ const OrdersPage = () => {
         <OrderTable />
       </div>
     </DefaultLayout>
-  )
-}
+  );
+};
 
-export default OrdersPage
+export default OrdersPage;
 
