@@ -4,11 +4,9 @@ import jwt from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
 import { useRouter } from 'next/router'; // Importez useRouter
 
-
 const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
-
   try {
     // Extraction des données JSON de la requête
     const { email, password } = await req.json();
@@ -46,8 +44,12 @@ export async function POST(req: Request) {
     }
 
     // Génération du token JWT
+    const tokenPayload = { userId: user.id, role: user.role };
+    if (!tokenPayload || typeof tokenPayload !== 'object') {
+      throw new TypeError('The "payload" argument must be of type object. Received null');
+    }
     const token = jwt.sign(
-      { userId: user.id, role: user.role },
+      tokenPayload,
       secretKey,
       { expiresIn: '1h' }
     );

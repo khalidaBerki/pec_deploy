@@ -70,7 +70,7 @@ export async function GET(req: Request, context: { params: { utilisateurId: stri
 
     return NextResponse.json({ cartItems, userName: user.nom, totalAmount }, { status: 200 });  // Retourner les éléments du panier avec les produits, le nom de l'utilisateur et le montant total
   } catch (error) {
-    console.error("Erreur lors de la récupération du panier:", error.message);
+    console.error("Erreur lors de la récupération du panier:", (error as any).message);
     return NextResponse.json({ message: "Erreur lors de la récupération du panier" }, { status: 500 });
   }
 }
@@ -139,7 +139,7 @@ export async function DELETE(req: Request, context: { params: { utilisateurId: s
 
     return NextResponse.json({ message: "Produit mis à jour dans le panier." }, { status: 200 });
   } catch (error) {
-    console.error("Erreur lors de la mise à jour du produit dans le panier:", error.message);
+    console.error("Erreur lors de la mise à jour du produit dans le panier:", (error as any).message);
     return NextResponse.json({ message: "Erreur lors de la mise à jour du produit dans le panier" }, { status: 500 });
   }
 }
