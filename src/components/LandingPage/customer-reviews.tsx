@@ -160,7 +160,7 @@ export function CustomerReviews() {
               <DialogHeader>
                 <DialogTitle>Laisser un avis</DialogTitle>
                 <DialogDescription>
-                  Partagez votre expérience avec IA_Drive. Vos commentaires nous aident à nous améliorer !
+                  Partagez votre expérience avec YumiMind. Vos commentaires nous aident à nous améliorer !
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleSubmitReview} className="grid gap-6 py-4">

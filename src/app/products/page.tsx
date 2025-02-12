@@ -1,52 +1,59 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { Produit } from "@prisma/client";
-import {jwtDecode} from "jwt-decode"; // Correct import for jwt-decode v4.0.0
+import { useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
+import Link from "next/link"
+import type { Produit } from "@prisma/client"
+import { jwtDecode } from "jwt-decode"
+import { Button } from "@/components/ui/button"
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState<Produit[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [cart, setCart] = useState<Produit[]>([]);
-  const [userId, setUserId] = useState<number | null>(null);
+  const [products, setProducts] = useState<Produit[]>([])
+  const [filteredProducts, setFilteredProducts] = useState<Produit[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
+  const [cart, setCart] = useState<Produit[]>([])
+  const [userId, setUserId] = useState<number | null>(null)
+
+  const searchParams = useSearchParams()
+  const ingredients = searchParams.get("ingredients")
 
   useEffect(() => {
     async function fetchProducts() {
-      setLoading(true);
+      setLoading(true)
       try {
-        const res = await fetch("/api/products");
+        const res = await fetch(`/api/products${ingredients ? `?ingredients=${ingredients}` : ""}`)
         if (!res.ok) {
-          throw new Error(`Erreur: ${res.status}`);
+          throw new Error(`Erreur: ${res.status}`)
         }
-        const data: Produit[] = await res.json();
-        setProducts(data);
+        const data: Produit[] = await res.json()
+        setProducts(data)
+        setFilteredProducts(data)
       } catch (err: any) {
-        setError(err.message || "Erreur lors de la récupération des produits");
+        setError(err.message || "Erreur lors de la récupération des produits")
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
 
-    fetchProducts();
+    fetchProducts()
 
     // Decode JWT to retrieve user ID
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token")
     if (token) {
       try {
-        const decoded: any = jwtDecode(token); // Using jwtDecode correctly
-        setUserId(decoded.userId);
+        const decoded: any = jwtDecode(token)
+        setUserId(decoded.userId)
       } catch (err) {
-        console.error("Erreur de décodage du token", err);
+        console.error("Erreur de décodage du token", err)
       }
     }
-  }, []); // Empty dependency array ensures this runs only once after the component mounts
+  }, [ingredients])
 
   const addToCart = async (product: Produit) => {
     if (!userId) {
-      alert("Veuillez vous connecter pour ajouter des produits au panier.");
-      return;
+      alert("Veuillez vous connecter pour ajouter des produits au panier.")
+      return
     }
 
     try {
@@ -57,38 +64,37 @@ export default function ProductsPage() {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({ utilisateurId: userId, productId: product.id }),
-      });
+      })
 
       if (!res.ok) {
-        throw new Error(`Erreur: ${res.status}`);
+        throw new Error(`Erreur: ${res.status}`)
       }
 
-      const { cartItem } = await res.json();
-      setCart((prevCart) => [...prevCart, cartItem.produit]);
+      const { cartItem } = await res.json()
+      setCart((prevCart) => [...prevCart, cartItem.produit])
     } catch (err: any) {
-      console.error("Erreur lors de l'ajout au panier:", err.message);
+      console.error("Erreur lors de l'ajout au panier:", err.message)
     }
-  };
+  }
 
-  if (loading) return <div className="text-center p-4">Chargement...</div>;
-  if (error) return <div className="text-center text-red-600 p-4">{error}</div>;
+  if (loading) return <div className="text-center p-4">Chargement...</div>
+  if (error) return <div className="text-center text-red-600 p-4">{error}</div>
 
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
-        <h1 className="text-3xl font-bold mb-6 text-center">Tous les produits</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center">
+          {ingredients ? "Produits correspondant à vos ingrédients" : "Tous les produits"}
+        </h1>
 
-        {products.length > 0 ? (
+        {filteredProducts.length > 0 ? (
           <ul className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-            {products.map((product) => (
-              <li
-                key={product.id}
-                className="group"
-              >
+            {filteredProducts.map((product) => (
+              <li key={product.id} className="group">
                 <Link href={`/products/${product.id}`} className="block">
                   {product.image ? (
                     <img
-                      src={product.image}
+                      src={product.image || "/placeholder.svg"}
                       alt={product.nom}
                       className="aspect-square w-full rounded-lg bg-gray-200 object-cover group-hover:opacity-75 xl:aspect-7/8"
                     />
@@ -97,12 +103,12 @@ export default function ProductsPage() {
                   <p className="text-gray-600 text-sm mb-1">{product.description}</p>
                   <p className="text-green-600 font-medium text-lg">Prix : {product.prix} €</p>
                 </Link>
-                <button
+                <Button
                   onClick={() => addToCart(product)}
                   className="mt-4 w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
                 >
                   Ajouter au panier
-                </button>
+                </Button>
               </li>
             ))}
           </ul>
@@ -111,5 +117,6 @@ export default function ProductsPage() {
         )}
       </div>
     </div>
-  );
+  )
 }
+

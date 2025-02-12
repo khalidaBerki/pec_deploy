@@ -41,7 +41,7 @@ export function TutorialVideo() {
             <iframe
               className="aspect-video w-full"
               src="https://www.youtube.com/embed/N0ADpGqGhY8?autoplay=1"
-              title="Tutoriel IA_Drive"
+              title="Tutoriel YumiMind"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
