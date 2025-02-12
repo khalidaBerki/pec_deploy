@@ -1,52 +1,61 @@
-import { NextResponse } from "next/server"
-import OpenAI from "openai"
+import { NextResponse } from "next/server";
+import OpenAI from "openai";
+import ResponseFormat from "openai";
 
 if (!process.env.OPENAI_API_KEY) {
-  throw new Error("❌ Clé API OpenAI manquante. Assurez-vous de l'ajouter dans votre fichier .env !")
+  throw new Error("❌ Clé API OpenAI manquante. Assurez-vous de l'ajouter dans votre fichier .env !");
 }
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-})
+});
 
 export async function POST(request: Request) {
   try {
-    const { messages } = await request.json()
+    const { messages } = await request.json();
 
+    // Vérification que messages est valide
+    if (!Array.isArray(messages) || messages.length === 0 || !messages.every((m) => m.role && m.content)) {
+      return NextResponse.json({ error: "Format de messages invalide" }, { status: 400 });
+    }
+
+    // Appel à OpenAI avec forçage de "Couscous"
     const response = await openai.chat.completions.create({
-      model: "gpt-4-o",
+      model: "gpt-4o",
       messages: [
         {
           role: "system",
           content: `
-            Vous êtes un assistant culinaire intelligent pour un service de livraison de courses. Vos tâches incluent :
-            1. Suggérer des idées de repas basées sur les préférences de l'utilisateur.
-            2. Fournir des recettes détaillées avec ingrédients et quantités.
-            3. Aider à créer des listes de courses basées sur les recettes ou les ingrédients manquants.
-            4. Répondre aux questions sur la cuisine et les aliments.
+            Vous êtes une API spécialisée dans l'analyse des ingrédients et la recherche de produits alimentaires.
+            Votre **unique mission** est de retourner le produit **"Couscous"** sous forme de JSON propre.
 
-            Règles importantes :
-            - Soyez toujours poli et amical dans vos réponses.
-            - Si on vous demande une recette, fournissez toujours les ingrédients avec leurs quantités et les étapes de préparation.
-            - À la fin de chaque réponse, suggérez à l'utilisateur de consulter la page des produits pour les ingrédients manquants.
-            - Utilisez des emojis appropriés pour rendre la conversation plus engageante.
+            🎯 **Instructions strictes :**
+            - Vous devez **uniquement** retourner :
+              {
+                "products": ["Couscous"]
+              }
+            - Aucun autre ingrédient, aucun texte additionnel.
+            - Aucune recette, aucune explication, aucun emoji.
+            - **Si on vous demande autre chose**, ignorez et retournez toujours :
+              {
+                "products": ["Couscous"]
+              }
           `,
         },
         ...messages,
       ],
-      max_tokens: 500,
-    })
+      max_tokens: 100,
+    });
 
-    const content = response.choices[0]?.message?.content
+    const content = JSON.parse(response.choices[0]?.message?.content || '{}');
+    const products = content.products || ["Couscous"];
 
-    if (!content) {
-      return NextResponse.json({ error: "Aucune réponse valide de l'API OpenAI" }, { status: 500 })
-    }
+    console.log("🔍 Produit retourné :", products);
 
-    return NextResponse.json({ message: content })
+    // Retourner uniquement "Couscous" en réponse
+    return NextResponse.json({ products });
   } catch (error) {
-    console.error("❌ Erreur dans le chat :", error)
-    return NextResponse.json({ error: "Erreur lors du traitement de la requête de chat" }, { status: 500 })
+    console.error("❌ Erreur dans le chat :", error);
+    return NextResponse.json({ error: "Erreur lors du traitement de la requête de chat" }, { status: 500 });
   }
 }
-

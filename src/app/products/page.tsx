@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button"
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Produit[]>([])
-  const [filteredProducts, setFilteredProducts] = useState<Produit[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const [cart, setCart] = useState<Produit[]>([])
@@ -22,13 +21,42 @@ export default function ProductsPage() {
     async function fetchProducts() {
       setLoading(true)
       try {
-        const res = await fetch(`/api/products${ingredients ? `?ingredients=${ingredients}` : ""}`)
-        if (!res.ok) {
-          throw new Error(`Erreur: ${res.status}`)
+        if (ingredients) {
+          const ingredientList = ingredients.split(",")
+          const foundProducts: Produit[] = []
+          const missingIngredients: string[] = []
+
+          for (const ingredient of ingredientList) {
+            const res = await fetch(`/api/products?search=${encodeURIComponent(ingredient)}`)
+            if (!res.ok) {
+              throw new Error(`Erreur: ${res.status}`)
+            }
+            const data: Produit[] = await res.json()
+            if (data.length > 0) {
+              foundProducts.push(...data)
+            } else {
+              missingIngredients.push(ingredient)
+            }
+          }
+
+          setProducts(foundProducts)
+
+          // Store missing ingredients in the analysis table
+          for (const missingIngredient of missingIngredients) {
+            await fetch("/api/analysis", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ name: missingIngredient }),
+            })
+          }
+        } else {
+          const res = await fetch("/api/products")
+          if (!res.ok) {
+            throw new Error(`Erreur: ${res.status}`)
+          }
+          const data: Produit[] = await res.json()
+          setProducts(data)
         }
-        const data: Produit[] = await res.json()
-        setProducts(data)
-        setFilteredProducts(data)
       } catch (err: any) {
         setError(err.message || "Erreur lors de la récupération des produits")
       } finally {
@@ -87,9 +115,9 @@ export default function ProductsPage() {
           {ingredients ? "Produits correspondant à vos ingrédients" : "Tous les produits"}
         </h1>
 
-        {filteredProducts.length > 0 ? (
+        {products.length > 0 ? (
           <ul className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-            {filteredProducts.map((product) => (
+            {products.map((product) => (
               <li key={product.id} className="group">
                 <Link href={`/products/${product.id}`} className="block">
                   {product.image ? (

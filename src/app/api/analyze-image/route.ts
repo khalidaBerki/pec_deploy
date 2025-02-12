@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     console.log("📸 Analyse de l'image en cours...")
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4-o",
+      model: "gpt-4o",
       messages: [
         {
           role: "system",

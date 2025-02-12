@@ -9,23 +9,25 @@ export async function GET(request: Request) {
     let products
 
     if (ingredients) {
-      const ingredientList = ingredients.split(",").map((i) => i.trim().toLowerCase())
+      const ingredientList = ingredients.split(",").map((i) => i.trim())
       products = await prisma.produit.findMany({
         where: {
-          OR: [
-            {
-              nom: {
-                contains: ingredientList[0],
-                mode: "insensitive",
+          OR: ingredientList.map((ingredient) => ({
+            OR: [
+              {
+                nom: {
+                  contains: ingredient,
+                  mode: "insensitive",
+                },
               },
-            },
-            {
-              description: {
-                contains: ingredientList[0],
-                mode: "insensitive",
+              {
+                description: {
+                  contains: ingredient,
+                  mode: "insensitive",
+                },
               },
-            },
-          ],
+            ],
+          })),
         },
         include: {
           categorie: true,
@@ -66,3 +68,4 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Erreur lors de l'ajout au panier" }, { status: 500 })
   }
 }
+
