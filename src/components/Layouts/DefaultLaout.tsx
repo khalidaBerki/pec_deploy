@@ -1,6 +1,10 @@
 "use client";
 import React, { useState, ReactNode } from "react";
+<<<<<<< HEAD
 import Header from "@/components/Header";
+=======
+import Header from "@/components/HeaderDashboard";
+>>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
 import Sidebar from "@/components/Sidebar";
 
 

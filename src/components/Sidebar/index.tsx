@@ -193,7 +193,11 @@ const menuGroups = [
         route: "#",
         children: [
           { label: "Alerts Produits", route: "/dashboard/alerts" },
+<<<<<<< HEAD
           { label: "Alerts Utilisateurs", route: "/dashboard/alertsUsers" },
+=======
+          { label: "Avis Utilisateurs", route: "/dashboard/alertsUsers" },
+>>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
         ],
       },
       {
@@ -248,8 +252,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
             <Image
               width={176}
               height={32}
+<<<<<<< HEAD
               src={"/favicon.ico"}
               alt="Logo Drive"
+=======
+              src="/images/logo.svg"
+              alt="YumiMind"
+>>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
               priority
               className="dark:hidden"
               style={{ width: "auto", height: "auto" }}
@@ -257,8 +266,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
             <Image
               width={176}
               height={32}
+<<<<<<< HEAD
               src={"/favicon.ico"}
               alt="Logo Drive"
+=======
+              src="/images/logo.svg"
+              alt="YumiMind"
+>>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
               priority
               className="hidden dark:block"
               style={{ width: "auto", height: "auto" }}

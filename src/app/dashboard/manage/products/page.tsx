@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React from "react";
 import FormElements from "@/components/FormElements/products";
 import { Metadata } from "next";
@@ -16,4 +17,39 @@ const FormElementsPage = () => {
   );
 };
 
+=======
+"use client";
+import React, { useEffect, useState } from "react";
+import FormElements from "@/components/FormElements/products";
+import DefaultLayout from "@/components/Layouts/DefaultLaout";
+import { useRouter } from "next/navigation";
+
+const FormElementsPage = () => {
+  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Replace with actual authentication check
+      const authCheck = false; 
+      if (!authCheck) {
+        router.push("/");
+      } else {
+        setIsAuthenticated(true);
+      }
+    }
+  }, [router]);
+
+  if (!isAuthenticated) {
+    return null; // or a loading spinner
+  }
+
+  return (
+    <DefaultLayout>
+      <FormElements />
+    </DefaultLayout>
+  );
+};
+
+>>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
 export default FormElementsPage;

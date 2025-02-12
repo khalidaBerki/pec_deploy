@@ -78,13 +78,21 @@ const FormElements = () => {
   // Function to set error message
   const setErrorMessage = (message: string) => {
     setStatusMessage({ type: "error", message })
+<<<<<<< HEAD
     setTimeout(() => setStatusMessage(null), 5000) // Clear message after 5 seconds
+=======
+    setTimeout(() => setStatusMessage(null), 10000) // Clear message after 10 seconds
+>>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
   }
 
   // Function to set success message
   const setSuccessMessage = (message: string) => {
     setStatusMessage({ type: "success", message })
+<<<<<<< HEAD
     setTimeout(() => setStatusMessage(null), 5000) // Clear message after 5 seconds
+=======
+    setTimeout(() => setStatusMessage(null), 10000) // Clear message after 10 seconds
+>>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
   }
 
   // Function to add a new category

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 "use client";
 import React, { useState } from "react";
 
@@ -22,11 +23,103 @@ const SelectProduct: React.FC = () => {
             setSelectedOption(e.target.value);
             changeTextColor();
           }}
+=======
+"use client"
+
+import type React from "react"
+import { useState, useEffect } from "react"
+
+export interface Product {
+  id: number
+  nom: string
+  description: string
+  prix: number
+  stock: number
+  categorieId: number
+  image: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface SelectProductProps {
+  products?: Product[]
+  selectedProduct?: Product | null
+  onProductChange?: (product: Product | null) => void
+  categoryId?: number | null
+}
+
+const SelectProduct: React.FC<SelectProductProps> = ({
+  products: propProducts,
+  selectedProduct,
+  onProductChange,
+  categoryId,
+}) => {
+  const [products, setProducts] = useState<Product[]>(propProducts || [])
+  const [isOptionSelected, setIsOptionSelected] = useState<boolean>(false)
+  const [selectedValue, setSelectedValue] = useState<number | "">("")
+
+  // Fetch products if not provided via props
+  useEffect(() => {
+    if (propProducts) {
+      setProducts(propProducts)
+    } else {
+      const fetchProducts = async () => {
+        try {
+          const response = await fetch("/api/productsAdmin")
+          if (!response.ok) {
+            throw new Error("Erreur lors de la récupération des produits")
+          }
+          const data = await response.json()
+          setProducts(data)
+        } catch (error) {
+          console.error("Erreur :", error)
+        }
+      }
+
+      fetchProducts()
+    }
+  }, [propProducts])
+
+  // Filter products based on selected category
+  const filteredProducts = categoryId ? products.filter((product) => product.categorieId === categoryId) : products
+
+  // Update selected value if a product is pre-selected
+  useEffect(() => {
+    if (selectedProduct) {
+      setSelectedValue(selectedProduct.id)
+      setIsOptionSelected(true)
+    } else {
+      setSelectedValue("")
+      setIsOptionSelected(false)
+    }
+  }, [selectedProduct])
+
+  const handleSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedId = Number.parseInt(e.target.value)
+    setSelectedValue(selectedId)
+
+    const selectedProduct = filteredProducts.find((product) => product.id === selectedId) || null
+    if (onProductChange) {
+      onProductChange(selectedProduct)
+    }
+    setIsOptionSelected(!!selectedProduct)
+  }
+
+  return (
+    <div className="">
+      <label className="mb-3 block text-body-sm font-medium text-dark dark:text-white">Sélectionner un Produit</label>
+
+      <div className="relative z-20 bg-transparent dark:bg-dark-2">
+        <select
+          value={selectedValue}
+          onChange={handleSelectionChange}
+>>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
           className={`relative z-20 w-full appearance-none rounded-[7px] border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary ${
             isOptionSelected ? "text-dark dark:text-white" : ""
           }`}
         >
           <option value="" disabled className="text-dark-6">
+<<<<<<< HEAD
             Sélectionner votre Produit 
           </option>
           <option value="USA" className="text-dark-6">
@@ -38,6 +131,15 @@ const SelectProduct: React.FC = () => {
           <option value="Canada" className="text-dark-6">
             c
           </option>
+=======
+            Sélectionner votre Produit
+          </option>
+          {filteredProducts.map((product) => (
+            <option key={product.id} value={product.id} className="text-dark-6">
+              {product.nom}
+            </option>
+          ))}
+>>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
         </select>
 
         <span className="absolute right-4 top-1/2 z-30 -translate-y-1/2">
@@ -57,7 +159,15 @@ const SelectProduct: React.FC = () => {
         </span>
       </div>
     </div>
+<<<<<<< HEAD
   );
 };
 
 export default SelectProduct;
+=======
+  )
+}
+
+export default SelectProduct
+
+>>>>>>> 1e330dfb07b3c1100addbad2ac5c63be5485e4cf
