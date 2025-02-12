@@ -10,8 +10,10 @@ export async function GET() {
     })
 
     return NextResponse.json(alerts)
-  } catch (error) {
-    console.error("Error fetching alerts:", error)
+  } catch (error: any) {
+    if (error) {
+      console.error("Error fetching alerts:", error)
+    }
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
   }
 }

@@ -112,7 +112,7 @@ export function Header() {
                 transition={{ duration: 0.5 }}
               >
                 <Button variant="ghost" size="icon" aria-label="Compte utilisateur">
-                  <Link href="/auth/login">
+                  <Link href="/profil">
                     <motion.div
                       animate={{ rotate: [0, 14, -8, 14, -4, 10, 0] }}
                       transition={{ duration: 2.5, loop: Number.POSITIVE_INFINITY, repeatDelay: 7 }}

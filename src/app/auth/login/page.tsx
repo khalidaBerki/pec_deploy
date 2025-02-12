@@ -8,6 +8,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const router = useRouter();
 
@@ -27,24 +28,22 @@ export default function LoginPage() {
     if (res.ok) {
       const { token, user } = await res.json();
 
-      if (!user || !user.emailVerified) {
-        alert('Veuillez vérifier votre email avant de vous connecter.');
+      localStorage.setItem('token', token);
+      console.log('Token:', token);
+      console.log('User Role:', user.role);
+
+      if (user.role === 'ADMIN') {
+        router.push('/dashboard');
+        return;
+      } else if (user.role === 'CLIENT') {
+        router.push('/');
         return;
       }
-
-      localStorage.setItem('token', token);
-      // if (user.role === 'ADMIN') {
-      //   router.push('/admin');
-      //   return;
-      // }else if (user.role === 'CLIENT') {
-        router.push('/products');
-        // return;
-      } else {
+    } else {
       const errorData = await res.json();
-      alert(errorData.error);
+      setErrorMessage(errorData.error);
     }
   };
-
 
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
@@ -111,25 +110,33 @@ export default function LoginPage() {
           <div>
             <button
               type="submit"
-
               disabled={isLoading}
               className={`flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm ${isLoading ? 'bg-gray-400' : 'bg-indigo-600 hover:bg-indigo-500'} focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
             >
               {isLoading ? 'Chargement...' : 'Se connecter'}
-
             </button>
           </div>
         </form>
 
+        {errorMessage && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white p-6 rounded shadow-lg text-center">
+              <p className="text-red-500">{errorMessage}</p>
+              <button
+                onClick={() => setErrorMessage('')}
+                className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded"
+              >
+                Fermer
+              </button>
+            </div>
+          </div>
+        )}
+
         <p className="mt-10 text-center text-sm text-gray-500">
-
           Pas encore membre ? 
-
           <a href="/auth/signup" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"> Créez un compte</a>
         </p>
       </div>
     </div>
   );
-
 }
-
