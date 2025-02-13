@@ -144,7 +144,7 @@ export async function POST(req: Request, context: { params: { orderId: string } 
 
     return NextResponse.json({ url: session.url }, { status: 200 });
   } catch (error) {
-    console.error("Erreur lors de la création de la session de paiement:", error.message);
+    console.error("Erreur lors de la création de la session de paiement:", (error as Error).message);
     return NextResponse.json({ message: "Erreur lors de la création de la session de paiement" }, { status: 500 });
   }
 }
