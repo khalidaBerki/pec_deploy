@@ -1,38 +1,56 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { useTheme } from "next-themes"
-import { motion, AnimatePresence } from "framer-motion"
-import { Moon, Sun, ShoppingCart, Menu, User, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useTheme } from "next-themes";
+import { motion, AnimatePresence } from "framer-motion";
+import { Moon, Sun, ShoppingCart, Menu, User, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const { theme, setTheme } = useTheme()
-  const [isWaving, setIsWaving] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [isWaving, setIsWaving] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsWaving(true), 500)
-    return () => clearTimeout(timer)
-  }, [])
+    const timer = setTimeout(() => setIsWaving(true), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const scrollToSection = (sectionId: string) => {
-    const section = document.getElementById(sectionId)
+    const section = document.getElementById(sectionId);
     if (section) {
-      section.scrollIntoView({ behavior: "smooth" })
+      section.scrollIntoView({ behavior: "smooth" });
     }
-    setIsMenuOpen(false)
-  }
+    setIsMenuOpen(false);
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
         <div className="flex items-center space-x-4">
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="font-bold text-lg">IA_Drive</span>
+          <Link href="/" className="text-2xl font-bold">
+            <Image
+              width={144}
+              height={32}
+              src="/images/logo.svg"
+              alt="YumiMind"
+              priority
+              className="dark:hidden"
+              style={{ width: "auto", height: "auto" }}
+            />
+            <Image
+              width={144}
+              height={32}
+              src="/images/logo.svg"
+              alt="YumiMind"
+              priority
+              className="hidden dark:block"
+              style={{ width: "auto", height: "auto" }}
+            />
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -113,7 +131,7 @@ export function Header() {
                 transition={{ duration: 0.5 }}
               >
                 <Button variant="ghost" size="icon" aria-label="Compte utilisateur">
-                  <Link href="/api/auth/login">
+                  <Link href="/auth/login">
                     <User className="h-5 w-5" />
                   </Link>
                 </Button>
@@ -158,6 +176,5 @@ export function Header() {
         </div>
       )}
     </header>
-  )
+  );
 }
-

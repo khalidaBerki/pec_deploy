@@ -39,12 +39,23 @@ export default function SignUpPage() {
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8 bg-white-100">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <Image
-          className="mx-auto h-10 w-auto"
-          src="/images/logo.svg"
-          alt="YumiMind"
-          width={40}
-          height={40}
-        />
+         className="mx-auto h-10 w-auto dark:hidden"
+         width={144}
+         height={32}
+         src="/images/logo.svg"
+         alt="YumiMind"
+         priority
+         style={{ width: "auto", height: "auto" }}
+       />
+       <Image
+         width={144}
+         height={32}
+         src="/images/logo.svg"
+         alt="YumiMind"
+         priority
+         className="hidden dark:block mx-auto h-10 w-auto"
+         style={{ width: "auto", height: "auto" }}
+       />
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           S'inscrire
         </h2>
