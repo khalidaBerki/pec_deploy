@@ -84,9 +84,33 @@ export function Header() {
           </DropdownMenu>
         </div>
         <nav className="hidden md:flex ml-auto items-center space-x-6 text-sm font-medium">
-          <Button variant="ghost" onClick={() => scrollToSection("about")}>
-            À propos
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost">Catégories</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-[200px] bg-white dark:bg-gray-800">
+              <DropdownMenuItem>
+                <Link href="/fruits-vegetables" className="flex items-center">
+                  🍎 Fruits et Légumes
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link href="/dairy-eggs" className="flex items-center">
+                  🥚 Produits Laitiers et Œufs
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link href="/meat-seafood" className="flex items-center">
+                  🍖 Viande et Fruits de Mer
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link href="/bakery" className="flex items-center">
+                  🍞 Boulangerie
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button variant="ghost" onClick={() => scrollToSection("features")}>
             Fonctionnalités
           </Button>
@@ -97,10 +121,12 @@ export function Header() {
         <div className="ml-auto flex items-center space-x-4">
           <Input type="search" placeholder="Rechercher..." className="h-9 w-[200px] lg:w-[300px] hidden md:block" />
           <Button variant="ghost" size="icon" className="relative" aria-label="Panier">
-            <ShoppingCart className="h-5 w-5" />
-            <span className="absolute top-0 right-0 h-4 w-4 rounded-full bg-red-500 text-[10px] font-bold text-white flex items-center justify-center">
-              3
-            </span>
+            <Link href="/cart">
+              <ShoppingCart className="h-5 w-5" />
+              <span className="absolute top-0 right-0 h-4 w-4 rounded-full bg-red-500 text-[10px] font-bold text-white flex items-center justify-center">
+                3
+              </span>
+            </Link>
           </Button>
           <AnimatePresence mode="wait">
             {isWaving ? (
@@ -163,13 +189,13 @@ export function Header() {
         <div className="md:hidden">
           <nav className="flex flex-col items-center space-y-4 py-4">
             <Button variant="ghost" onClick={() => scrollToSection("about")}>
-              À propos
+              Catégories
             </Button>
             <Button variant="ghost" onClick={() => scrollToSection("features")}>
-              Fonctionnalités
+              tous les produits
             </Button>
             <Button variant="ghost" onClick={() => scrollToSection("tutorial")}>
-              Guide
+              IA-Shopper
             </Button>
             <Input type="search" placeholder="Rechercher..." className="h-9 w-full max-w-[300px]" />
           </nav>
