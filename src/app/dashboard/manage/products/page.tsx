@@ -4,25 +4,26 @@ import FormElements from "@/components/FormElements/products";
 import DefaultLayout from "@/components/Layouts/DefaultLaout";
 import { useRouter } from "next/navigation";
 
+
+import useAuth from "@/hooks/useAuth";
 const FormElementsPage = () => {
-  const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Replace with actual authentication check
-      const authCheck = false; 
-      if (!authCheck) {
-        router.push("/");
-      } else {
-        setIsAuthenticated(true);
-      }
-    }
-  }, [router]);
-
-  if (!isAuthenticated) {
-    return null; // or a loading spinner
-  }
+ const { loading, isAdmin } = useAuth();
+   const router = useRouter();
+   const [authorized, setAuthorized] = useState(false);
+ 
+   useEffect(() => {
+     if (loading) return;
+ 
+     if (!isAdmin) {
+       router.push("/");
+     } else {
+       setAuthorized(true);
+     }
+   }, [loading, isAdmin, router]);
+ 
+   if (loading || !authorized) {
+     return <p>Chargement...</p>;
+   }
 
   return (
     <DefaultLayout>
