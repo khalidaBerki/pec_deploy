@@ -13,6 +13,7 @@ export default function ProductsPage() {
   const [error, setError] = useState<string | null>(null)
   const [cart, setCart] = useState<Produit[]>([])
   const [userId, setUserId] = useState<number | null>(null)
+  const [notFoundProducts, setNotFoundProducts] = useState<string[]>([])
 
   const searchParams = useSearchParams()
   const ingredients = searchParams.get("ingredients")
@@ -29,8 +30,9 @@ export default function ProductsPage() {
         if (!res.ok) {
           throw new Error(`Erreur: ${res.status}`)
         }
-        const data: Produit[] = await res.json()
-        setProducts(data)
+        const data = await res.json()
+        setProducts(data.products)
+        setNotFoundProducts(data.notFoundProducts)
       } catch (err: any) {
         setError(err.message || "Erreur lors de la récupération des produits")
       } finally {
@@ -116,6 +118,19 @@ export default function ProductsPage() {
           </ul>
         ) : (
           <p className="text-center text-gray-600">Aucun produit trouvé.</p>
+        )}
+
+        {notFoundProducts.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-xl font-bold mb-4">Produits non disponibles :</h2>
+            <ul className="list-disc list-inside">
+              {notFoundProducts.map((product, index) => (
+                <li key={index} className="text-gray-600">
+                  {product}
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </div>
     </div>
