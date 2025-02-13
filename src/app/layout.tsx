@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Head from "next/head";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -10,7 +10,7 @@ import { Footer } from "@/components/LandingPage/footer";
 import type React from "react";
 import { AnnouncementBanner } from "@/components/LandingPage/announcement-banner"
 import { AIShoppingAssistant } from "@/components/LandingPage/ai-shopping-assistant"
-import { HeroSection } from "@/components/LandingPage/hero-section"
+import { HeroSection } from "@/components/LandingPage/hero-section";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -36,11 +36,18 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [isAIAssistantOpen, setIsAIAssistantOpen] = useState(false)
+  const [isAIAssistantOpen, setIsAIAssistantOpen] = useState(false);
+  const [isDashboardPage, setIsDashboardPage] = useState(false);
 
   const handleStartClick = () => {
-    setIsAIAssistantOpen(true)
-  }
+    setIsAIAssistantOpen(true);
+  };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsDashboardPage(window.location.pathname.startsWith("/dashboard"));
+    }
+  }, []);
 
   return (
     <html lang="fr" className={`${poppins.variable}`} suppressHydrationWarning>
@@ -50,13 +57,12 @@ export default function RootLayout({
       </Head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <AnnouncementBanner />
-          <Header /> 
+          {!isDashboardPage && <AnnouncementBanner />}
+          {!isDashboardPage && <Header />}
           <main className="flex-1">{children}</main>
-          <Footer />
+          {!isDashboardPage && <Footer />}
           <AIShoppingAssistant isOpen={isAIAssistantOpen} />  
         </ThemeProvider>
-        
       </body>
     </html>
   );
