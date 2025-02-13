@@ -7,7 +7,8 @@ import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "framer-motion";
 import { Moon, Sun, ShoppingCart, Menu, User, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";import axios from 'axios';
+import { Input } from "@/components/ui/input";
+import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
 export function Header() {
@@ -22,6 +23,29 @@ export function Header() {
 
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const router = typeof window !== 'undefined' ? useRouter() : null;
+  const [userId, setUserId] = useState("guest");
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      try {
+        const response = await axios.get('/api/auth/check-session', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        if (response.data.user) {
+          setUserId(response.data.user.id);
+        } else {
+          setUserId("guest");
+        }
+      } catch (error) {
+        console.error("Failed to fetch user ID:", error);
+        setUserId("guest");
+      }
+    };
+
+    fetchUserId();
+  }, []);
 
   const handleSearch = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -81,14 +105,14 @@ export function Header() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </form>
-          <Button variant="ghost" size="icon" className="relative" aria-label="Panier">
-            <Link href="/cart">
+          <Link href={`/cart/${userId}`}>
+            <Button variant="ghost" size="icon" className="relative" aria-label="Panier">
               <ShoppingCart className="h-5 w-5" />
               <span className="absolute top-0 right-0 h-4 w-4 rounded-full bg-red-500 text-[10px] font-bold text-white flex items-center justify-center">
                 3
               </span>
-            </Link>
-          </Button>
+            </Button>
+          </Link>
           <AnimatePresence mode="wait">
             {isWaving ? (
               <motion.div
