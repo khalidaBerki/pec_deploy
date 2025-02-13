@@ -63,13 +63,14 @@ export async function PUT(req: Request) {
   }
 
   // Extraire les données du corps de la requête
-  const { email, password, telephone, adresse } = await req.json();
+  const { email, password, currentPassword, telephone, adresse } = await req.json();
 
   // Validation des champs requis
   const missingFields: string[] = [];
   if (!email) missingFields.push('email');
   if (!telephone) missingFields.push('telephone');
   if (!adresse) missingFields.push('adresse');
+  if (!currentPassword) missingFields.push('currentPassword');
 
   // Vérification des champs manquants
   if (missingFields.length > 0) {
@@ -96,7 +97,13 @@ export async function PUT(req: Request) {
     return NextResponse.json({ error: "Cet email est déjà utilisé." }, { status: 400 });
   }
 
-  // Si un mot de passe est fourni, on le hache
+  // Vérification du mot de passe actuel
+  const isPasswordValid = await bcrypt.compare(currentPassword, user.passwordHash);
+  if (!isPasswordValid) {
+    return NextResponse.json({ error: 'Le mot de passe actuel est incorrect.' }, { status: 400 });
+  }
+
+  // Si un nouveau mot de passe est fourni, on le hache
   let passwordHash = user.passwordHash;
   if (password) {
     passwordHash = await bcrypt.hash(password, 10); // Hachage du mot de passe

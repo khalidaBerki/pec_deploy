@@ -11,7 +11,7 @@ export async function GET() {
 
     return NextResponse.json(alerts)
   } catch (error: any) {
-    if (error) {
+    if (error && typeof error === 'object') {
       console.error("Error fetching alerts:", error)
     }
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })

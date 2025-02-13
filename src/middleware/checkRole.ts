@@ -25,6 +25,14 @@ export async function middleware(req: NextRequest) {
       // Validation du token
       const decodedToken = validateToken(token);
 
+      console.log("Decoded Token:", decodedToken);
+
+      // Vérifier si l'utilisateur est authentifié
+      if (!decodedToken) {
+        console.warn("Redirection: Utilisateur non authentifié.");
+        return NextResponse.redirect(new URL("/", req.url));
+      }
+
       // Vérifier le rôle de l'utilisateur
       if (decodedToken.role === "CLIENT") {
         console.warn("Redirection: L'utilisateur est un client et tente d'accéder à une route admin.");
