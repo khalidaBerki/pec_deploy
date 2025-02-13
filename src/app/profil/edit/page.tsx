@@ -7,6 +7,7 @@ import Image from 'next/image';
 export default function EditProfilePage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
   const [telephone, setTelephone] = useState('');
   const [address, setAddress] = useState('');
   const [error, setError] = useState('');
@@ -57,7 +58,7 @@ export default function EditProfilePage() {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({ email, password, telephone, adresse: address }), // Ensure 'adresse' is correctly sent
+      body: JSON.stringify({ email, password, currentPassword, telephone, adresse: address }), // Ensure 'currentPassword' is correctly sent
     });
 
     if (res.ok) {
@@ -100,6 +101,25 @@ export default function EditProfilePage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
+                required
+                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
+            </div>
+          </div>
+
+          {/* Current Password Field */}
+          <div>
+            <label htmlFor="currentPassword" className="block text-sm font-medium leading-6 text-gray-900">
+              Mot de passe actuel
+            </label>
+            <div className="mt-2">
+              <input
+                id="currentPassword"
+                name="currentPassword"
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="Mot de passe actuel"
                 required
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />

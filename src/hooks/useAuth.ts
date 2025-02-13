@@ -37,9 +37,13 @@ export default function useAuth() {
           const data = await res.json();
           setUser(data.user);
           setIsVerified(data.user.emailVerified);  // Si l'email est vérifié
-          setIsAdmin(data.user.role === "admin"); // Vérifie si le rôle est admin
+          setIsAdmin(data.user.role === "ADMIN"); // Vérifie si le rôle est admin
+          console.log("User:", data.user);
+          console.log("isVerified:", data.user.emailVerified);
+          console.log("isAdmin:", data.user.role === "ADMIN");
         } else {
           setUser(null);
+          console.log("Failed to fetch user data");
         }
       } catch (error) {
         console.error("Erreur lors de la vérification de la session:", error);

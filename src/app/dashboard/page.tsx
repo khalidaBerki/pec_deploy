@@ -17,9 +17,20 @@ export default function Home() {
     // Si l'utilisateur est en cours de chargement, on ne fait rien
     if (loading) return;
 
-    // Si l'utilisateur n'est pas admin et tente d'accéder au dashboard, on le redirige
-    if (path.startsWith("/dashboard") && !isAdmin) {
-      router.push("/");
+    console.log("Path:", path);
+    console.log("Loading:", loading);
+    console.log("isAdmin:", isAdmin);
+
+    // Si l'utilisateur tente d'accéder au dashboard
+    if (path.startsWith("/dashboard")) {
+      // Si l'utilisateur n'est pas authentifié ou n'est pas admin, on le redirige
+      if (!isAdmin) {
+        console.log("User is not admin, redirecting to home");
+        router.push("/");
+      } else {
+        setAuthorized(true);
+        console.log("User is admin, access granted");
+      }
     } else {
       setAuthorized(true);
     }

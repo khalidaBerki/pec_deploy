@@ -18,11 +18,18 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'JWT secret non défini' }, { status: 500 });
     }
     const decoded: any = jwt.verify(token, secret);
+    console.log("Decoded token:", decoded);
+
+    // Vérification des propriétés du token décodé
+    if (!decoded || typeof decoded !== 'object' || !decoded.userId) {
+      throw new Error('Le token décodé est invalide.');
+    }
     
     // Récupère l'utilisateur dans la base de données
     const user = await prisma.utilisateur.findUnique({
       where: { id: decoded.userId },
     });
+    console.log("Fetched user:", user);
 
     if (!user) {
       return NextResponse.json({ error: 'Utilisateur non trouvé' }, { status: 404 });
@@ -30,6 +37,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json({ user });
   } catch (error) {
+    console.error("Error verifying token:", error);
     return NextResponse.json({ error: 'Token invalide ou expiré' }, { status: 401 });
   }
 }

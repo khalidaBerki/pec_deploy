@@ -22,12 +22,14 @@ export async function GET(req: Request) {
     }
 
     try {
-      const decoded = jwt.verify(token, secretKey) as { userId: number | null };
-      if (!decoded || !decoded.userId) {
+      const decoded = jwt.verify(token, secretKey);
+      if (typeof decoded !== 'object' || !decoded || !('userId' in decoded)) {
+        console.error('Invalid token payload:', decoded);
         return NextResponse.json({ error: 'Invalid token payload' }, { status: 400 });
       }
+      const userId = (decoded as { userId: number }).userId;
       const user = await prisma.utilisateur.findUnique({
-        where: { id: decoded.userId },
+        where: { id: userId },
         select: {
           id: true,
           nom: true,
@@ -43,10 +45,6 @@ export async function GET(req: Request) {
 
       if (!user) {
         return NextResponse.json({ error: 'User not found' }, { status: 404 });
-      }
-
-      if (!user.adresse) {
-        return NextResponse.json({ error: 'Adresse is required' }, { status: 400 });
       }
 
       return NextResponse.json({ user }, { status: 200 });

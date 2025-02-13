@@ -3,27 +3,26 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Suppliers from "@/components/lists/suppliers";
-
 import DefaultLayout from "@/components/Layouts/DefaultLaout";
+import useAuth from "@/hooks/useAuth";
 
 const TablesPage = () => {
+  const { loading, isAdmin } = useAuth();
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authorized, setAuthorized] = useState(false);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const res = await fetch("/api/checkAuth");
-      if (res.status === 200) {
-        setIsAuthenticated(true);
-      } else {
-        router.push("/");
-      }
-    };
-    checkAuth();
-  }, [router]);
+    if (loading) return;
 
-  if (!isAuthenticated) {
-    return null; // or a loading spinner
+    if (!isAdmin) {
+      router.push("/");
+    } else {
+      setAuthorized(true);
+    }
+  }, [loading, isAdmin, router]);
+
+  if (loading || !authorized) {
+    return <p>Chargement...</p>;
   }
 
   return (
