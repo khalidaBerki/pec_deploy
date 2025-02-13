@@ -33,12 +33,17 @@ export async function GET(request: Request) {
           categorie: true,
         },
       })
+
+      console.log(`Recherche de produits pour les ingrédients: ${ingredients}`)
+      console.log(`Nombre de produits trouvés: ${products.length}`)
     } else {
       products = await prisma.produit.findMany({
         include: {
           categorie: true,
         },
       })
+      console.log("Récupération de tous les produits")
+      console.log(`Nombre total de produits: ${products.length}`)
     }
 
     return NextResponse.json(products)

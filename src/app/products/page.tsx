@@ -21,42 +21,16 @@ export default function ProductsPage() {
     async function fetchProducts() {
       setLoading(true)
       try {
+        let url = "/api/products"
         if (ingredients) {
-          const ingredientList = ingredients.split(",")
-          const foundProducts: Produit[] = []
-          const missingIngredients: string[] = []
-
-          for (const ingredient of ingredientList) {
-            const res = await fetch(`/api/products?search=${encodeURIComponent(ingredient)}`)
-            if (!res.ok) {
-              throw new Error(`Erreur: ${res.status}`)
-            }
-            const data: Produit[] = await res.json()
-            if (data.length > 0) {
-              foundProducts.push(...data)
-            } else {
-              missingIngredients.push(ingredient)
-            }
-          }
-
-          setProducts(foundProducts)
-
-          // Store missing ingredients in the analysis table
-          for (const missingIngredient of missingIngredients) {
-            await fetch("/api/analysis", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ name: missingIngredient }),
-            })
-          }
-        } else {
-          const res = await fetch("/api/products")
-          if (!res.ok) {
-            throw new Error(`Erreur: ${res.status}`)
-          }
-          const data: Produit[] = await res.json()
-          setProducts(data)
+          url += `?ingredients=${encodeURIComponent(ingredients)}`
         }
+        const res = await fetch(url)
+        if (!res.ok) {
+          throw new Error(`Erreur: ${res.status}`)
+        }
+        const data: Produit[] = await res.json()
+        setProducts(data)
       } catch (err: any) {
         setError(err.message || "Erreur lors de la récupération des produits")
       } finally {
@@ -112,7 +86,7 @@ export default function ProductsPage() {
     <div className="bg-white">
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
         <h1 className="text-3xl font-bold mb-6 text-center">
-          {ingredients ? "Produits correspondant à vos ingrédients" : "Tous les produits"}
+          {ingredients ? `Produits correspondant à : ${ingredients}` : "Tous les produits"}
         </h1>
 
         {products.length > 0 ? (
