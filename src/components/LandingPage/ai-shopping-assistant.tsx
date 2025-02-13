@@ -44,6 +44,8 @@ export function AIShoppingAssistant({ isOpen: initialIsOpen = false }) {
   const [detectedIngredients, setDetectedIngredients] = useState<string[]>([])
   const [suggestedIngredients, setSuggestedIngredients] = useState<string[]>([])
   const [recipe, setRecipe] = useState<Recipe | null>(null)
+  const [currentDish, setCurrentDish] = useState<string | null>(null)
+  const [missingIngredients, setMissingIngredients] = useState<string[]>([])
   const router = useRouter()
 
   useEffect(() => {
@@ -56,7 +58,7 @@ export function AIShoppingAssistant({ isOpen: initialIsOpen = false }) {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
     }
-  }, []) //Corrected dependency
+  }, [chatContainerRef]) // Removed messages from dependencies
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
@@ -132,18 +134,44 @@ export function AIShoppingAssistant({ isOpen: initialIsOpen = false }) {
       setDetectedIngredients(data.visibleIngredients)
       setSuggestedIngredients(data.suggestedIngredients)
       setRecipe(data.recipe)
+      setCurrentDish(data.dish)
 
-      // Identify and send missing products
-      await identifyAndSendMissingProducts(data.visibleIngredients, data.suggestedIngredients)
+      const allIngredients = [...data.visibleIngredients, ...data.suggestedIngredients]
+      const missingProducts = await identifyAndSendMissingProducts(allIngredients)
+      setMissingIngredients(missingProducts)
 
-      sendMessage(
-        `J'ai détecté le plat suivant : ${data.dish}. Voici les ingrédients visibles : ${data.visibleIngredients.join(
-          ", ",
-        )}. Je suggère d'ajouter : ${data.suggestedIngredients.join(
-          ", ",
-        )}. Voulez-vous voir la recette ou ajouter ces ingrédients à votre liste de courses ?`,
-        "assistant",
-      )
+      // Send the analysis result to the chat API
+      const chatResponse = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [
+            { role: "system", content: "Image analysis result" },
+            { role: "user", content: JSON.stringify(data) },
+          ],
+          currentDish: data.dish,
+          detectedIngredients: data.visibleIngredients,
+          suggestedIngredients: data.suggestedIngredients,
+          missingIngredients: missingProducts,
+        }),
+      })
+
+      if (!chatResponse.ok) {
+        throw new Error("Erreur lors de la communication avec l'assistant")
+      }
+
+      const chatData = await chatResponse.json()
+      sendMessage(chatData.message, "assistant")
+
+      if (chatData.recipe) {
+        setRecipe(chatData.recipe)
+        sendMessage(
+          "Voici la recette pour le " +
+            chatData.recipe.name +
+            ". Voulez-vous la voir en détail ou ajouter les ingrédients à votre liste de courses ?",
+          "assistant",
+        )
+      }
     } catch (error) {
       console.error("Erreur lors de l'analyse de l'image:", error)
       sendMessage("Désolé, une erreur s'est produite lors de l'analyse de l'image. Veuillez réessayer.", "assistant")
@@ -152,11 +180,9 @@ export function AIShoppingAssistant({ isOpen: initialIsOpen = false }) {
     }
   }
 
-  const identifyAndSendMissingProducts = async (detectedIngredients: string[], suggestedIngredients: string[]) => {
-    const allIngredients = [...detectedIngredients, ...suggestedIngredients]
-
+  const identifyAndSendMissingProducts = async (ingredients: string[]): Promise<string[]> => {
     try {
-      const response = await fetch("/api/products", {
+      const response = await fetch(`/api/products?ingredients=${encodeURIComponent(ingredients.join(","))}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -167,16 +193,16 @@ export function AIShoppingAssistant({ isOpen: initialIsOpen = false }) {
         throw new Error("Failed to fetch products")
       }
 
-      const products = await response.json()
-      const productNames = products.map((product: any) => product.nom.toLowerCase())
+      const { products, notFoundProducts } = await response.json()
 
-      const missingProducts = allIngredients.filter((ingredient) => !productNames.includes(ingredient.toLowerCase()))
-
-      if (missingProducts.length > 0) {
-        await postMissingProducts(missingProducts)
+      if (notFoundProducts.length > 0) {
+        await postMissingProducts(notFoundProducts)
       }
+
+      return notFoundProducts
     } catch (error) {
       console.error("Error identifying and sending missing products:", error)
+      return []
     }
   }
 
@@ -213,7 +239,10 @@ export function AIShoppingAssistant({ isOpen: initialIsOpen = false }) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             messages: [...messages.map((m) => ({ role: m.type, content: m.content })), { role: "user", content }],
-            displayStyle: content.toLowerCase().includes("recette") ? "recipe" : "shopping_list",
+            currentDish,
+            detectedIngredients,
+            suggestedIngredients,
+            missingIngredients,
           }),
         })
 
@@ -228,11 +257,23 @@ export function AIShoppingAssistant({ isOpen: initialIsOpen = false }) {
           setRecipe(data.recipe)
         }
 
+        if (data.newDish) {
+          setCurrentDish(data.newDish)
+          setDetectedIngredients([])
+          setSuggestedIngredients([])
+          setMissingIngredients([])
+        }
+
         if (data.products && data.products.length > 0) {
           const productMessage = `Voici les produits suggérés : ${data.products.join(
             ", ",
-          )}. Cliquez sur le bouton ci-dessous pour voir ces produits dans notre magasin.`
+          )}. Voulez-vous voir ces produits dans notre magasin ?`
           sendMessage(productMessage, "assistant")
+        }
+
+        if (data.purchaseRequest) {
+          const confirmMessage = `Voulez-vous voir les produits suivants dans notre magasin : ${data.purchaseRequest.join(", ")} ?`
+          sendMessage(confirmMessage, "assistant")
         }
       } catch (error) {
         console.error("Erreur lors de l'envoi du message:", error)
@@ -243,14 +284,24 @@ export function AIShoppingAssistant({ isOpen: initialIsOpen = false }) {
     }
   }
 
+  const handleViewProducts = (products: string[]) => {
+    const queryString = new URLSearchParams({ ingredients: products.join(",") }).toString()
+    router.push(`/products?${queryString}`)
+  }
+
+  const handlePurchaseRequest = (products: string[]) => {
+    const queryString = new URLSearchParams({ ingredients: products.join(",") }).toString()
+    router.push(`/products?${queryString}`)
+  }
+
   const handleSendMessage = () => {
-    if (!userInput.trim()) return
+    if (!userInput.trim() || isLoading) return
 
     sendMessage(userInput, "user")
     setUserInput("")
   }
 
-  const handleViewProducts = () => {
+  const handleViewProductsAll = () => {
     const allIngredients = [...detectedIngredients, ...suggestedIngredients]
     const queryString = new URLSearchParams({ ingredients: allIngredients.join(",") }).toString()
     router.push(`/products?${queryString}`)
@@ -258,13 +309,14 @@ export function AIShoppingAssistant({ isOpen: initialIsOpen = false }) {
 
   const renderMessage = (message: Message) => {
     const content = message.content
-    const productButtonRegex = /Cliquez sur le bouton ci-dessous pour voir ces produits/
+    const productButtonRegex = /Voulez-vous voir ces produits dans notre magasin/
 
     if (productButtonRegex.test(content)) {
+      const products = content.match(/produits suggérés : (.*?)\./)?.[1].split(", ") || []
       return (
         <>
           <p className="text-sm whitespace-pre-line">{content}</p>
-          <Button variant="outline" size="sm" className="mt-2" onClick={handleViewProducts}>
+          <Button variant="outline" size="sm" className="mt-2" onClick={() => handleViewProducts(products)}>
             <ShoppingCart className="mr-2 h-4 w-4" />
             Voir les produits
           </Button>

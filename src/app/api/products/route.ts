@@ -6,7 +6,8 @@ export async function GET(request: Request) {
   const ingredients = searchParams.get("ingredients")
 
   try {
-    let products
+    let products: any[] = []
+    let notFoundProducts: string[] = []
 
     if (ingredients) {
       const ingredientList = ingredients.split(",").map((i) => i.trim())
@@ -34,8 +35,13 @@ export async function GET(request: Request) {
         },
       })
 
+      notFoundProducts = ingredientList.filter(
+        (ingredient) => !products.some((p) => p.nom.toLowerCase().includes(ingredient.toLowerCase())),
+      )
+
       console.log(`Recherche de produits pour les ingrédients: ${ingredients}`)
       console.log(`Nombre de produits trouvés: ${products.length}`)
+      console.log(`Produits non trouvés: ${notFoundProducts.join(", ")}`)
     } else {
       products = await prisma.produit.findMany({
         include: {
@@ -46,7 +52,7 @@ export async function GET(request: Request) {
       console.log(`Nombre total de produits: ${products.length}`)
     }
 
-    return NextResponse.json(products)
+    return NextResponse.json({ products, notFoundProducts })
   } catch (error: any) {
     console.error("Erreur API produits:", error.message || error)
     return NextResponse.json({ error: "Erreur lors de la récupération des produits" }, { status: 500 })

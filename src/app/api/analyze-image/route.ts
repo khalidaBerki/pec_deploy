@@ -33,8 +33,10 @@ export async function POST(request: Request) {
             - Une liste d'ingrédients supplémentaires suggérés
             - Une recette simple basée sur les ingrédients identifiés
 
-            Assurez-vous que votre réponse soit un JSON valide, sans backticks (\`\`\`) ni autres marqueurs.
-            Utilisez le format suivant :
+            IMPORTANT: Votre réponse DOIT être un JSON valide, sans aucun texte supplémentaire avant ou après.
+            N'incluez PAS de backticks (\`\`\`) ni d'autres marqueurs dans votre réponse.
+
+            Utilisez strictement le format suivant :
             {
               "dish": "Nom du plat principal",
               "visibleIngredients": ["ingrédient1", "ingrédient2", ...],
@@ -58,7 +60,7 @@ export async function POST(request: Request) {
           ],
         },
       ],
-      // max_tokens: 1000,
+      response_format: { type: "json_object" },
     })
 
     const content = response.choices[0]?.message?.content
@@ -70,8 +72,14 @@ export async function POST(request: Request) {
 
     console.log("✅ Réponse reçue :", content)
 
-    // Parse the JSON response
-    const analysisResult = JSON.parse(content)
+    let analysisResult
+
+    try {
+      analysisResult = JSON.parse(content)
+    } catch (parseError) {
+      console.error("❌ Erreur lors de l'analyse de la réponse JSON :", parseError)
+      return NextResponse.json({ error: "Erreur lors de l'analyse de la réponse de l'IA" }, { status: 500 })
+    }
 
     return NextResponse.json(analysisResult)
   } catch (error: any) {
