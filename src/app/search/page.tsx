@@ -8,7 +8,7 @@ import { Produit } from '@prisma/client';
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
-  const query = searchParams.get('query');
+  const query = searchParams ? searchParams.get('query') : null;
   const router = useRouter();
   const [searchResults, setSearchResults] = useState<Produit[]>([]);
   const [userId, setUserId] = useState<string | null>(null);

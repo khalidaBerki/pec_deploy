@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
 
 export async function GET(req: Request, context: { params: { productId: string } }) {
-  const { productId } = context.params
+  const { productId } = await context.params;
 
   const productIdInt = Number.parseInt(productId)
   if (isNaN(productIdInt)) {
