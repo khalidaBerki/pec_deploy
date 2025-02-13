@@ -7,30 +7,37 @@ import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "framer-motion";
 import { Moon, Sun, ShoppingCart, Menu, User, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const [isWaving, setIsWaving] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  interface Product {
+    id: string;
+    name: string;
+  }
+
+  const [searchResults, setSearchResults] = useState<Product[]>([]);
+  const router = typeof window !== 'undefined' ? useRouter() : null;
+
+  const handleSearch = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (searchQuery.trim() && router) {
+      router.push(`/search?query=${searchQuery}`);
+    }
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => setIsWaving(true), 500);
     return () => clearTimeout(timer);
   }, []);
 
-  const scrollToSection = (sectionId: string) => {
-    const section = document.getElementById(sectionId);
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
-    }
-    setIsMenuOpen(false);
-  };
-
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
+      <div className="container flex h-14 items-center justify-between">
         <div className="flex items-center space-x-4">
           <Link href="/" className="text-2xl font-bold">
             <Image
@@ -52,74 +59,28 @@ export function Header() {
               style={{ width: "auto", height: "auto" }}
             />
           </Link>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="p-0">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Catégories</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-[200px] bg-white dark:bg-gray-800">
-              <DropdownMenuItem>
-                <Link href="/fruits-vegetables" className="flex items-center">
-                  🍎 Fruits et Légumes
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link href="/dairy-eggs" className="flex items-center">
-                  🥚 Produits Laitiers et Œufs
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link href="/meat-seafood" className="flex items-center">
-                  🍖 Viande et Fruits de Mer
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link href="/bakery" className="flex items-center">
-                  🍞 Boulangerie
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <nav className="hidden md:flex space-x-4">
+            <Link href="/categories" className="flex items-center">
+               Catégories
+            </Link>
+            <Link href="/products" className="flex items-center">
+              Tous les produits
+            </Link>
+            <Link href="/meat-seafood" className="flex items-center">
+              IA-shoper
+            </Link>
+          </nav>
         </div>
-        <nav className="hidden md:flex ml-auto items-center space-x-6 text-sm font-medium">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost">Catégories</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-[200px] bg-white dark:bg-gray-800">
-              <DropdownMenuItem>
-                <Link href="/fruits-vegetables" className="flex items-center">
-                  🍎 Fruits et Légumes
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link href="/dairy-eggs" className="flex items-center">
-                  🥚 Produits Laitiers et Œufs
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link href="/meat-seafood" className="flex items-center">
-                  🍖 Viande et Fruits de Mer
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link href="/bakery" className="flex items-center">
-                  🍞 Boulangerie
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Button variant="ghost" onClick={() => scrollToSection("features")}>
-            Fonctionnalités
-          </Button>
-          <Button variant="ghost" onClick={() => scrollToSection("tutorial")}>
-            Guide
-          </Button>
-        </nav>
         <div className="ml-auto flex items-center space-x-4">
-          <Input type="search" placeholder="Rechercher..." className="h-9 w-[200px] lg:w-[300px] hidden md:block" />
+          <form onSubmit={handleSearch} className="hidden md:block">
+            <Input
+              type="search"
+              placeholder="Rechercher..."
+              className="h-9 w-[200px] lg:w-[300px]"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </form>
           <Button variant="ghost" size="icon" className="relative" aria-label="Panier">
             <Link href="/cart">
               <ShoppingCart className="h-5 w-5" />
@@ -188,16 +149,24 @@ export function Header() {
       {isMenuOpen && (
         <div className="md:hidden">
           <nav className="flex flex-col items-center space-y-4 py-4">
-            <Button variant="ghost" onClick={() => scrollToSection("about")}>
-              Catégories
-            </Button>
-            <Button variant="ghost" onClick={() => scrollToSection("features")}>
-              tous les produits
-            </Button>
-            <Button variant="ghost" onClick={() => scrollToSection("tutorial")}>
-              IA-Shopper
-            </Button>
-            <Input type="search" placeholder="Rechercher..." className="h-9 w-full max-w-[300px]" />
+            <Link href="/categories" className="flex items-center">
+              Categories
+            </Link>
+            <Link href="/products" className="flex items-center">
+              Tous les produits
+            </Link>
+            <Link href="/meat-seafood" className="flex items-center">
+              IA-shoper
+            </Link>
+            <form onSubmit={handleSearch} className="w-full max-w-[300px]">
+              <Input
+                type="search"
+                placeholder="Rechercher..."
+                className="h-9 w-full"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </form>
           </nav>
         </div>
       )}
