@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation'; // Update the import statement
 import Image from 'next/image';
 
 export default function LoginPage() {
@@ -12,36 +12,52 @@ export default function LoginPage() {
 
   const router = useRouter();
 
-  const handleLogin = async () => {
+  const handleLogin = async (event: React.FormEvent) => {
+    event.preventDefault();
     setIsLoading(true);
+    setErrorMessage('');
 
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    console.log('Email:', email);
+    console.log('Password:', password);
 
-    setIsLoading(false);
+    if (!email || !password) {
+      setErrorMessage('Email et mot de passe requis.');
+      setIsLoading(false);
+      return;
+    }
 
-    if (res.ok) {
-      const { token, user } = await res.json();
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-      localStorage.setItem('token', token);
-      console.log('Token:', token);
-      console.log('User Role:', user.role);
+      const data = await res.json();
 
-      if (user.role === 'ADMIN') {
-        router.push('/dashboard');
-        return;
-      } else if (user.role === 'CLIENT') {
-        router.push('/');
-        return;
+      setIsLoading(false);
+
+      if (res.ok) {
+        localStorage.setItem('token', data.token);
+        console.log('Token:', data.token);
+        console.log('User Role:', data.user.role);
+
+        if (data.user.role === 'ADMIN') {
+          router.push('/dashboard');
+          return;
+        } else if (data.user.role === 'CLIENT') {
+          router.push('/');
+          return;
+        }
+      } else {
+        setErrorMessage(data.error);
       }
-    } else {
-      const errorData = await res.json();
-      setErrorMessage(errorData.error);
+    } catch (error) {
+      console.error('An unexpected error occurred:', error);
+      setErrorMessage('An unexpected error occurred. Please try again.');
+      setIsLoading(false);
     }
   };
 
@@ -61,7 +77,7 @@ export default function LoginPage() {
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+        <form className="space-y-6" onSubmit={handleLogin}>
           <div>
             <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">Adresse email</label>
             <div className="mt-2">

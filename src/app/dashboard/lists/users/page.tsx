@@ -1,30 +1,28 @@
 "use client";
-"use strict";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Users from "@/components/lists/users";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
 import DefaultLayout from "@/components/Layouts/DefaultLaout";
+import useAuth from "@/hooks/useAuth";
 
 const TablesPage = () => {
+  const { loading, isAdmin } = useAuth();
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authorized, setAuthorized] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Replace with actual authentication check
-      const authCheck = false; 
-      if (!authCheck) {
-        router.push("/");
-      } else {
-        setIsAuthenticated(true);
-      }
-    }
-  }, [router]);
+    if (loading) return;
 
-  if (!isAuthenticated) {
-    return null; // or a loading spinner
+    if (!isAdmin) {
+      router.push("/");
+    } else {
+      setAuthorized(true);
+    }
+  }, [loading, isAdmin, router]);
+
+  if (loading || !authorized) {
+    return <p>Chargement...</p>;
   }
 
   return (
