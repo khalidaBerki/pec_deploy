@@ -33,8 +33,9 @@ export function Header() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        if (response.data.user) {
-          setUserId(response.data.user.id);
+        const data = response.data as { user?: { id: string } };
+        if (data.user) {
+          setUserId((response.data as { user: { id: string } }).user.id);
         } else {
           setUserId("guest");
         }
